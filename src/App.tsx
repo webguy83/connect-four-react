@@ -39,6 +39,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           fontSize: 24,
+          fontWeight: 700,
         },
       },
     },
