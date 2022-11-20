@@ -6,7 +6,7 @@ export const MainMenuContainerStyle: SxProps<Theme> = (theme) => ({
   pt: 8.75,
   pb: 7.5,
   borderWidth: 3,
-  borderBottomWidth: 12,
   borderColor: theme.palette.primary.dark,
   borderStyle: 'solid',
+  boxShadow: `0px 10px 0px 0px ${theme.palette.primary.dark}`,
 });

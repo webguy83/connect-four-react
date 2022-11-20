@@ -3,4 +3,9 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  margin: 0 20px;
+}
+
+html {
+  font-size: 62.5%;
 }

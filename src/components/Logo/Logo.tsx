@@ -2,9 +2,9 @@ import Box from '@mui/material/Box';
 
 export default function Logo() {
   return (
-    <Box component='svg' width='52px' height='52px' viewBox='0 0 58 61' version='1.1' xmlns='http://www.w3.org/2000/svg'>
+    <Box component='svg' width='58px' height='58px' viewBox='0 0 58 61' version='1.1' xmlns='http://www.w3.org/2000/svg'>
       <title>logo</title>
-      <g id='Designs' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'>
+      <g id='Designs' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
         <g id='assets' transform='translate(-432.000000, -742.000000)'>
           <g id='Group-24' transform='translate(211.000000, 160.000000)'>
             <g id='logo' transform='translate(221.000000, 582.000000)'>
