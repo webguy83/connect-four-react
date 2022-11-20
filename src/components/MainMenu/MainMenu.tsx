@@ -13,9 +13,19 @@ interface MainMenuProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
 }
 
-const menuGlobalStyles = <GlobalStyles styles={(theme) => ({ body: { backgroundColor: theme.palette.primary.main } })} />;
-
 export default function MainMenu(props: MainMenuProps) {
+  const menuGlobalStyles = (
+    <GlobalStyles
+      styles={(theme) => ({
+        body: {
+          backgroundColor: theme.palette.primary.light,
+          [theme.breakpoints.up('sm')]: {
+            backgroundColor: theme.palette.primary.main,
+          },
+        },
+      })}
+    />
+  );
   function onGameRulesClicked() {
     props.setGameState('rules');
   }
@@ -33,7 +43,7 @@ export default function MainMenu(props: MainMenuProps) {
               <Box component='span'>Play vs CPU</Box>
             </MenuButton>
             <MenuButton sx={(theme) => ({ backgroundColor: theme.palette.secondary.main, '&:hover': { backgroundColor: theme.palette.secondary.main }, color: theme.palette.primary.dark })} variant='contained' endIcon={<PlayerVsPlayerIcon />}>
-              <Box component='span' sx={{ mr: 10 }}>
+              <Box component='span' sx={(theme) => ({ mr: '1rem', [theme.breakpoints.up('sm')]: { mr: '4rem' } })}>
                 Play vs Player
               </Box>
             </MenuButton>

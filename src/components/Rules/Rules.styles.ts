@@ -3,7 +3,10 @@ import { SxProps, Theme } from '@mui/material';
 export const rulesRootStyles: SxProps<Theme> = (theme) => ({
   position: 'relative',
   backgroundColor: theme.palette.secondary.light,
-  padding: '3.4rem',
+  padding: '3.4rem 2rem',
+  [theme.breakpoints.up('sm')]: {
+    padding: '3.4rem',
+  },
   borderRadius: '4rem',
   borderWidth: 3,
   borderColor: theme.palette.primary.dark,

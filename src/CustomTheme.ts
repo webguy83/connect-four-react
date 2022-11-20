@@ -58,6 +58,9 @@ const themeOptions: ThemeOptions = {
       },
       styleOverrides: {
         root: {
+          '& circle': {
+            transition: 'fill .25s cubic-bezier(0.4, 0, 0.2, 1)',
+          },
           '&:hover circle': {
             transition: 'fill .25s cubic-bezier(0.4, 0, 0.2, 1)',
           },
