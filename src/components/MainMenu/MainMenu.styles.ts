@@ -15,4 +15,24 @@ export const MainMenuContainerStyle: SxProps<Theme> = (theme) => ({
     pb: 7.5,
   },
   borderStyle: 'solid',
+
+  '& .playVsCpu': {
+    backgroundColor: theme.palette.secondary.dark,
+    '&:hover': { backgroundColor: theme.palette.secondary.dark },
+  },
+
+  '& .playVsPlayer': {
+    backgroundColor: theme.palette.secondary.main,
+    '&:hover': { backgroundColor: theme.palette.secondary.main },
+    color: theme.palette.primary.dark,
+    '& .text': {
+      mr: '1rem',
+      [theme.breakpoints.up('sm')]: { mr: '4rem' },
+    },
+  },
+  '& .gameRules': {
+    backgroundColor: theme.palette.secondary.light,
+    '&:hover': { backgroundColor: theme.palette.secondary.light },
+    color: theme.palette.primary.dark,
+  },
 });

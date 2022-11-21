@@ -4,7 +4,7 @@ import PlayerVsPlayerIcon from '../Icons/PlayerVsPlayerIcon';
 import PlayerVsCpuIcon from '../Icons/PlayerVsCpuIcon';
 import Logo from '../Logo/Logo';
 import { MainMenuContainerStyle } from './MainMenu.styles';
-import MenuButton from '../Buttons/MenuButton';
+import RectangleButton from '../Buttons/RectangleButton';
 import { Fade, GlobalStyles } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { GameState } from '../../utils/Types';
@@ -26,8 +26,13 @@ export default function MainMenu(props: MainMenuProps) {
       })}
     />
   );
+
   function onGameRulesClicked() {
     props.setGameState('rules');
+  }
+
+  function onGameBoardClicked() {
+    props.setGameState('game-board');
   }
 
   return (
@@ -39,17 +44,17 @@ export default function MainMenu(props: MainMenuProps) {
             <Logo />
           </Box>
           <Stack spacing={3}>
-            <MenuButton sx={(theme) => ({ backgroundColor: theme.palette.secondary.dark, '&:hover': { backgroundColor: theme.palette.secondary.dark } })} variant='contained' endIcon={<PlayerVsCpuIcon />}>
+            <RectangleButton className='playVsCpu' variant='contained' endIcon={<PlayerVsCpuIcon />}>
               <Box component='span'>Play vs CPU</Box>
-            </MenuButton>
-            <MenuButton sx={(theme) => ({ backgroundColor: theme.palette.secondary.main, '&:hover': { backgroundColor: theme.palette.secondary.main }, color: theme.palette.primary.dark })} variant='contained' endIcon={<PlayerVsPlayerIcon />}>
-              <Box component='span' sx={(theme) => ({ mr: '1rem', [theme.breakpoints.up('sm')]: { mr: '4rem' } })}>
+            </RectangleButton>
+            <RectangleButton className='playVsPlayer' onClick={onGameBoardClicked} variant='contained' endIcon={<PlayerVsPlayerIcon />}>
+              <Box component='span' className='text'>
                 Play vs Player
               </Box>
-            </MenuButton>
-            <MenuButton onClick={onGameRulesClicked} sx={(theme) => ({ backgroundColor: theme.palette.secondary.light, '&:hover': { backgroundColor: theme.palette.secondary.light }, color: theme.palette.primary.dark })} variant='contained'>
+            </RectangleButton>
+            <RectangleButton className='gameRules' onClick={onGameRulesClicked} variant='contained'>
               <Box component='span'>Game Rules</Box>
-            </MenuButton>
+            </RectangleButton>
           </Stack>
         </Box>
       </Fade>
