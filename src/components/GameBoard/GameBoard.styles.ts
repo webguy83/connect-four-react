@@ -19,7 +19,10 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
     },
   },
   '.group': {
-    mx: '5rem',
+    mx: 'auto',
+    [theme.breakpoints.up('md')]: {
+      mx: '5rem',
+    },
   },
   '.scores': {
     display: 'flex',
@@ -33,7 +36,10 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
 
     '& .scoreBox': {
       width: '48%',
-      p: '2rem 3rem',
+      p: '1rem 3rem',
+      [theme.breakpoints.up('sm')]: {
+        p: '2rem 3rem',
+      },
       gap: '1rem',
     },
   },
@@ -45,6 +51,16 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       position: 'relative',
       maxWidth: '63rem',
       width: '90vw',
+
+      '.winner-box': {
+        position: 'absolute',
+        bottom: '-10rem',
+        width: '80%',
+        maxWidth: '28rem',
+        zIndex: 3,
+        left: '50%',
+        transform: 'translateX(-50%)',
+      },
 
       '& > svg': {
         '&:first-of-type': {

@@ -1,8 +1,9 @@
 import { Box } from '@mui/material';
 import PillButton from '../Buttons/PillButton';
-import ConnectFourGridBlack from '../GameObjects/ConnectFourGridBlack';
-import ConnectFourGridWhite from '../GameObjects/ConnectFourGridWhite';
-import ScoreBox from '../GameObjects/ScoreBox';
+import ConnectFourGridBlack from '../GameObjects/BoardGrid/ConnectFourGridBlack';
+import ConnectFourGridWhite from '../GameObjects/BoardGrid/ConnectFourGridWhite';
+import ScoreBox from '../GameObjects/ScoreBox/ScoreBox';
+import WinnerBox from '../GameObjects/WinnerBox/WinnerBox';
 import PlayerOne from '../Icons/PlayerOne';
 import PlayerTwo from '../Icons/PlayerTwo';
 import Logo from '../Logo/Logo';
@@ -27,6 +28,7 @@ export default function GameBoard() {
             <ConnectFourGridWhite />
             {/* <Box sx={{ backgroundColor: 'red' }}>dsfssdjf;sd jf; sd flsd f;jd ddf</Box> */}
             <ConnectFourGridBlack />
+            <WinnerBox />
           </div>
         </div>
       </div>
