@@ -13,7 +13,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    mb: '5rem',
+    mt: 'auto',
     button: {
       minWidth: '10.8rem',
     },
@@ -27,7 +27,11 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   '.scores': {
     display: 'flex',
     px: '2rem',
-    my: '5rem',
+    my: '6rem',
+    [theme.breakpoints.up('sm')]: {
+      my: '1rem',
+    },
+
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },
@@ -46,6 +50,10 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
 
   '& .board': {
     display: 'flex',
+    mt: '2.5rem',
+    [theme.breakpoints.up('md')]: {
+      mt: '5rem',
+    },
 
     '.grid': {
       position: 'relative',
@@ -53,20 +61,30 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       width: '90vw',
 
       '.winner-box': {
-        position: 'absolute',
-        bottom: '-10rem',
         width: '80%',
         maxWidth: '28rem',
-        zIndex: 3,
-        left: '50%',
-        transform: 'translateX(-50%)',
       },
 
-      '& > svg': {
-        '&:first-of-type': {
-          position: 'absolute',
-          top: '-1rem',
+      '.connectFour': {
+        position: 'relative',
+        '& > svg': {
+          '&:last-of-type': {
+            position: 'absolute',
+            top: '.3rem',
+            left: 0,
+            zIndex: -1,
+          },
         },
+      },
+    },
+    '.lower-block': {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'relative',
+      marginTop: '-3rem',
+      [theme.breakpoints.up('sm')]: {
+        marginTop: '-5rem',
       },
     },
   },

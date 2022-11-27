@@ -3,6 +3,7 @@ import PillButton from '../Buttons/PillButton';
 import ConnectFourGridBlack from '../GameObjects/BoardGrid/ConnectFourGridBlack';
 import ConnectFourGridWhite from '../GameObjects/BoardGrid/ConnectFourGridWhite';
 import ScoreBox from '../GameObjects/ScoreBox/ScoreBox';
+import TimerBox from '../GameObjects/TimerBox/TimerBox';
 import WinnerBox from '../GameObjects/WinnerBox/WinnerBox';
 import PlayerOne from '../Icons/PlayerOne';
 import PlayerTwo from '../Icons/PlayerTwo';
@@ -25,10 +26,13 @@ export default function GameBoard() {
         </div>
         <div className='board'>
           <div className='grid'>
-            <ConnectFourGridWhite />
-            {/* <Box sx={{ backgroundColor: 'red' }}>dsfssdjf;sd jf; sd flsd f;jd ddf</Box> */}
-            <ConnectFourGridBlack />
-            <WinnerBox />
+            <div className='connectFour'>
+              <ConnectFourGridWhite />
+              <ConnectFourGridBlack />
+            </div>
+            <div className='lower-block'>
+              <WinnerBox />
+            </div>
           </div>
         </div>
       </div>
