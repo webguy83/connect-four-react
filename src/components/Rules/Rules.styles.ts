@@ -1,6 +1,8 @@
 import { SxProps, Theme } from '@mui/material';
+import { shadowStyle } from '../../utils/Styles';
 
 export const rulesRootStyles: SxProps<Theme> = (theme) => ({
+  ...shadowStyle(theme),
   position: 'relative',
   backgroundColor: theme.palette.secondary.light,
   padding: '3.4rem 2rem',
@@ -8,10 +10,6 @@ export const rulesRootStyles: SxProps<Theme> = (theme) => ({
     padding: '3.4rem',
   },
   borderRadius: '4rem',
-  borderWidth: 3,
-  borderColor: theme.palette.primary.dark,
-  borderStyle: 'solid',
-  boxShadow: `0px 10px 0px 0px ${theme.palette.primary.dark}`,
 
   '.ruleBlock': {
     mt: '3rem',

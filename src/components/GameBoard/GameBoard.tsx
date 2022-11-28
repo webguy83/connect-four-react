@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import PillButton from '../Buttons/PillButton';
 import ConnectFourGridBlack from '../GameObjects/BoardGrid/ConnectFourGridBlack';
@@ -10,16 +10,23 @@ import PlayerOne from '../Icons/PlayerOne';
 import PlayerTwo from '../Icons/PlayerTwo';
 import Logo from '../Logo/Logo';
 import { bottomBarStyles, gameBoardContainerStyles } from './GameBoard.styles';
+import Modal from '@mui/material/Modal';
+import PauseMenu from '../PauseMenu/PauseMenu';
 
 export default function GameBoard() {
   const blockRef = useRef<HTMLDivElement>(null);
   const [lowerBarHeight, setLowerBarHeight] = useState<number>(0);
+  const [openPauseMenu, setOpenPauseMenu] = useState(false);
 
   function addBarHeight() {
     if (blockRef.current) {
       const height = document.body.clientHeight - blockRef.current.getBoundingClientRect().y;
       setLowerBarHeight(height);
     }
+  }
+
+  function closeRules() {
+    setOpenPauseMenu(false);
   }
 
   const onWindowResize = useCallback(() => {
@@ -41,7 +48,7 @@ export default function GameBoard() {
         <ScoreBox Icon={<PlayerOne />} playerText='Player 1' />
         <div className='group'>
           <header>
-            <PillButton>Menu</PillButton>
+            <PillButton onClick={() => setOpenPauseMenu(true)}>Menu</PillButton>
             <Logo />
             <PillButton>Restart</PillButton>
           </header>
@@ -65,6 +72,9 @@ export default function GameBoard() {
         <ScoreBox Icon={<PlayerTwo />} playerText='Player 2' />
       </Box>
       <Box sx={bottomBarStyles} height={lowerBarHeight}></Box>
+      <Modal open={openPauseMenu} onClose={closeRules} aria-labelledby='rules-title' aria-describedby='rules-description'>
+        <PauseMenu />
+      </Modal>
     </>
   );
 }

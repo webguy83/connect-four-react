@@ -12,7 +12,7 @@ import { GameState } from './utils/Types';
 const theme = createTheme(themeOptions);
 
 function App() {
-  const [gameState, setGameState] = useState<GameState>('game-board');
+  const [gameState, setGameState] = useState<GameState>('main-menu');
   return (
     <Box className='app' mx={gameState === 'game-board' ? 0 : '2rem'}>
       <ThemeProvider theme={theme}>

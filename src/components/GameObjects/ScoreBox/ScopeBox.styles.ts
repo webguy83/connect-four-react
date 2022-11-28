@@ -1,6 +1,8 @@
 import { Theme } from '@mui/material';
+import { shadowStyle } from '../../../utils/Styles';
 
 export const scoreBoxContainerStyles = (theme: Theme) => ({
+  ...shadowStyle(theme),
   position: 'relative',
   display: 'flex',
   flexDirection: 'column',
@@ -9,11 +11,6 @@ export const scoreBoxContainerStyles = (theme: Theme) => ({
   textTransform: 'uppercase',
   p: '4.5rem 3rem 2rem',
   backgroundColor: theme.palette.secondary.light,
-  borderRadius: '2rem',
-  borderWidth: 3,
-  borderColor: theme.palette.primary.dark,
-  borderStyle: 'solid',
-  boxShadow: `0px 10px 0px 0px ${theme.palette.primary.dark}`,
   fontWeight: 700,
   textAlign: 'center',
   lineHeight: 1.3,
