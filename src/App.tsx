@@ -19,7 +19,7 @@ function App() {
         <CssBaseline />
         {gameState === 'main-menu' && <MainMenu setGameState={setGameState} />}
         {gameState === 'rules' && <Rules setGameState={setGameState} />}
-        {gameState === 'game-board' && <GameBoard />}
+        {gameState === 'game-board' && <GameBoard setGameState={setGameState} />}
       </ThemeProvider>
     </Box>
   );
