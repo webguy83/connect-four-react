@@ -3,9 +3,11 @@ import { SxProps, Theme } from '@mui/material';
 export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   display: 'flex',
   alignItems: 'center',
+  position: 'relative',
+  zIndex: 1,
   '& > .scoreBox': {
     display: 'none',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('mdlg')]: {
       display: 'block',
     },
   },
@@ -20,7 +22,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   },
   '.group': {
     mx: 'auto',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('mdlg')]: {
       mx: '5rem',
     },
   },
@@ -32,7 +34,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       my: '1rem',
     },
 
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('mdlg')]: {
       display: 'none',
     },
     justifyContent: 'space-between',
@@ -51,14 +53,13 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   '& .board': {
     display: 'flex',
     mt: '2.5rem',
-    [theme.breakpoints.up('md')]: {
+    [theme.breakpoints.up('mdlg')]: {
       mt: '5rem',
     },
 
     '.grid': {
       position: 'relative',
-      maxWidth: '63rem',
-      width: '90vw',
+      width: 'clamp(36rem, 90vw, 63rem)',
 
       '.winner-box': {
         width: '80%',
@@ -88,4 +89,14 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       },
     },
   },
+});
+
+export const bottomBarStyles: SxProps<Theme> = (theme) => ({
+  width: '100%',
+  backgroundColor: theme.palette.primary.main,
+  position: 'absolute',
+  bottom: 0,
+  borderTopLeftRadius: '6rem',
+  borderTopRightRadius: '6rem',
+  zIndex: 0,
 });

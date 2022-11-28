@@ -49,12 +49,12 @@ export const rulesRootStyles: SxProps<Theme> = (theme) => ({
     },
   },
 
-  button: {
-    position: 'absolute',
-    left: '50%',
-    transform: 'translateX(-50%)',
+  '& + .button-container': {
+    display: 'flex',
+    justifyContent: 'center',
+    mt: '-4rem',
 
-    '&:hover circle': {
+    '& .icon-button:hover circle': {
       '&:nth-of-type(1), &:nth-of-type(2)': {
         fill: theme.palette.primary.main,
       },

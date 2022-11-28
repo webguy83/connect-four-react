@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
@@ -13,14 +14,14 @@ const theme = createTheme(themeOptions);
 function App() {
   const [gameState, setGameState] = useState<GameState>('game-board');
   return (
-    <div className='app'>
+    <Box className='app' mx={gameState === 'game-board' ? 0 : '2rem'}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {gameState === 'main-menu' && <MainMenu setGameState={setGameState} />}
         {gameState === 'rules' && <Rules setGameState={setGameState} />}
         {gameState === 'game-board' && <GameBoard />}
       </ThemeProvider>
-    </div>
+    </Box>
   );
 }
 

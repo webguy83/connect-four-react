@@ -1,9 +1,6 @@
-#root {
-  margin: 0 20px;
-}
-
 .app {
   display: flex;
+  position: relative;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
@@ -11,4 +8,8 @@
 
 html {
   font-size: 62.5%;
+}
+
+body {
+  min-width: '35rem'
 }
