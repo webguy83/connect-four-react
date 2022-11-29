@@ -14,6 +14,7 @@ import Modal from '@mui/material/Modal';
 import PauseMenu from '../PauseMenu/PauseMenu';
 import { GameState } from '../../utils/Types';
 import MarkerIcon from '../Icons/MarkerIcon';
+import { makeHiddenDivs } from './Game';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -66,6 +67,7 @@ export default function GameBoard(props: GameBoardProps) {
             <MarkerIcon />
             <div className='grid'>
               <div className='connectFour'>
+                {makeHiddenDivs()}
                 <ConnectFourGridWhite />
                 <ConnectFourGridBlack />
               </div>

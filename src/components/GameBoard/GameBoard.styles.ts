@@ -1,4 +1,5 @@
 import { SxProps, Theme } from '@mui/material';
+import { red } from '@mui/material/colors';
 
 export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   display: 'flex',
@@ -59,9 +60,9 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
 
     '.marker-icon': {
       display: 'none',
-      [theme.breakpoints.up('mdlg')]: {
-        display: 'block',
-      },
+      // [theme.breakpoints.up('mdlg')]: {
+      //   display: 'block',
+      // },
       position: 'absolute',
       top: -37,
       left: 470,
@@ -76,6 +77,24 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       },
 
       '.connectFour': {
+        '.invisible-blocks-container': {
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gridTemplateRows: 'repeat(6, 15%)',
+          px: 1,
+          pt: 1,
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          opacity: 0.2,
+          zIndex: 5,
+
+          '.invisible-block': {
+            backgroundColor: 'green',
+            opacity: 0.5,
+            border: '1px solid black',
+          },
+        },
         position: 'relative',
         '& > svg': {
           '&:last-of-type': {
