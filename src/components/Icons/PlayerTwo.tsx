@@ -1,8 +1,6 @@
-import Box from '@mui/material/Box';
-
 export default function PlayerTwo() {
   return (
-    <Box component='svg' width='54px' height='59px' viewBox='0 0 54 59' version='1.1' xmlns='http://www.w3.org/2000/svg'>
+    <svg width='54px' height='59px' viewBox='0 0 54 59' version='1.1' xmlns='http://www.w3.org/2000/svg'>
       <title>player-two</title>
       <g id='Designs' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
         <g id='player-two' transform='translate(27.000000, 29.500000) scale(-1, 1) translate(-27.000000, -29.500000) '>
@@ -18,6 +16,6 @@ export default function PlayerTwo() {
           </g>
         </g>
       </g>
-    </Box>
+    </svg>
   );
 }

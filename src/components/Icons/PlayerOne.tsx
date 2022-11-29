@@ -1,8 +1,6 @@
-import Box from '@mui/material/Box';
-
 export default function PlayerOne() {
   return (
-    <Box className='playerOneIcon' component='svg' width='54px' height='59px' viewBox='0 0 54 59' version='1.1' xmlns='http://www.w3.org/2000/svg'>
+    <svg className='playerOneIcon' width='54px' height='59px' viewBox='0 0 54 59' version='1.1' xmlns='http://www.w3.org/2000/svg'>
       <title>player-one</title>
       <g id='Designs' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
         <g id='player-one'>
@@ -18,6 +16,6 @@ export default function PlayerOne() {
           </g>
         </g>
       </g>
-    </Box>
+    </svg>
   );
 }

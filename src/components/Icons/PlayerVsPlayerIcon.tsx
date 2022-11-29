@@ -1,8 +1,6 @@
-import Box from '@mui/material/Box';
-
 export default function PlayerVsPlayerIcon() {
   return (
-    <Box component='svg' width='82px' height='46px' viewBox='0 0 82 46' version='1.1' xmlns='http://www.w3.org/2000/svg'>
+    <svg width='82px' height='46px' viewBox='0 0 82 46' version='1.1' xmlns='http://www.w3.org/2000/svg'>
       <title>player-vs-player</title>
       <g id='Designs' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
         <g id='player-vs-player'>
@@ -36,6 +34,6 @@ export default function PlayerVsPlayerIcon() {
           </g>
         </g>
       </g>
-    </Box>
+    </svg>
   );
 }

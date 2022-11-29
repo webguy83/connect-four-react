@@ -13,6 +13,7 @@ import { bottomBarStyles, gameBoardContainerStyles } from './GameBoard.styles';
 import Modal from '@mui/material/Modal';
 import PauseMenu from '../PauseMenu/PauseMenu';
 import { GameState } from '../../utils/Types';
+import MarkerIcon from '../Icons/MarkerIcon';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -25,7 +26,7 @@ export default function GameBoard(props: GameBoardProps) {
 
   function addBarHeight() {
     if (blockRef.current) {
-      const height = document.body.clientHeight - blockRef.current.getBoundingClientRect().y;
+      const height = document.body.clientHeight - blockRef.current.getBoundingClientRect().y - window.scrollY;
       setLowerBarHeight(height);
     }
   }
@@ -62,6 +63,7 @@ export default function GameBoard(props: GameBoardProps) {
             <ScoreBox Icon={<PlayerTwo />} iconPlacement='right' playerText='Player 2' />
           </div>
           <div className='board'>
+            <MarkerIcon />
             <div className='grid'>
               <div className='connectFour'>
                 <ConnectFourGridWhite />

@@ -51,14 +51,23 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   },
 
   '& .board': {
-    display: 'flex',
+    position: 'relative',
     mt: '2.5rem',
     [theme.breakpoints.up('mdlg')]: {
       mt: '5rem',
     },
 
+    '.marker-icon': {
+      display: 'none',
+      [theme.breakpoints.up('mdlg')]: {
+        display: 'block',
+      },
+      position: 'absolute',
+      top: -37,
+      left: 470,
+    },
+
     '.grid': {
-      position: 'relative',
       width: 'clamp(36rem, 90vw, 63rem)',
 
       '.winner-box': {

@@ -1,8 +1,6 @@
-import Box from '@mui/material/Box';
-
 export default function AcceptIcon() {
   return (
-    <Box component='svg' width='70px' height='75px' viewBox='0 0 70 75' version='1.1' xmlns='http://www.w3.org/2000/svg'>
+    <svg width='70px' height='75px' viewBox='0 0 70 75' version='1.1' xmlns='http://www.w3.org/2000/svg'>
       <title>icon-check</title>
       <g id='Designs' stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
         <g id='icon-check'>
@@ -12,6 +10,6 @@ export default function AcceptIcon() {
           <polyline id='Path' stroke='#FFFFFF' strokeWidth='3' points='20 34.5819497 30.2640104 44.84596 50.1099704 25'></polyline>
         </g>
       </g>
-    </Box>
+    </svg>
   );
 }

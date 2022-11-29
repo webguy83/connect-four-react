@@ -1,8 +1,6 @@
-import { Box } from '@mui/material';
-
 export default function ConnectFourGridWhite() {
   return (
-    <Box component='svg' width='100%' height='100%' viewBox='0 0 632 594' xmlns='http://www.w3.org/2000/svg'>
+    <svg width='100%' height='100%' viewBox='0 0 632 594' xmlns='http://www.w3.org/2000/svg'>
       <defs>
         <filter x='-.8%' y='-.9%' width='101.6%' height='103.4%' filterUnits='objectBoundingBox' id='aa'>
           <feOffset dy='10' in='SourceAlpha' result='shadowOffsetOuter1' />
@@ -23,6 +21,6 @@ export default function ConnectFourGridWhite() {
           strokeLinejoin='round'
         />
       </g>
-    </Box>
+    </svg>
   );
 }
