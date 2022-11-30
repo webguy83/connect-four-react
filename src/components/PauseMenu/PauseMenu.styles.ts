@@ -24,11 +24,18 @@ export const pauseMenuStyles: SxProps<Theme> = (theme) => ({
     backgroundColor: theme.palette.secondary.light,
     color: theme.palette.primary.dark,
     justifyContent: 'center',
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.light,
+    },
   },
 
   '.quit-game-btn': {
     backgroundColor: theme.palette.secondary.dark,
     color: theme.palette.secondary.light,
     justifyContent: 'center',
+
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.dark,
+    },
   },
 });

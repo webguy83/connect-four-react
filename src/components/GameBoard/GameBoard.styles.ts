@@ -1,5 +1,4 @@
 import { SxProps, Theme } from '@mui/material';
-import { red } from '@mui/material/colors';
 
 export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   display: 'flex',
@@ -80,19 +79,19 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
         '.invisible-blocks-container': {
           display: 'grid',
           gridTemplateColumns: 'repeat(7, 1fr)',
-          gridTemplateRows: 'repeat(6, 15%)',
-          px: 1,
-          pt: 1,
           position: 'absolute',
-          width: '100%',
-          height: '100%',
-          opacity: 0.2,
+          width: '97.5%',
+          height: '89%',
+          [theme.breakpoints.up('sm')]: {
+            height: '89.5%',
+          },
+          mt: '1.1%',
+          ml: '1.2%',
           zIndex: 5,
 
           '.invisible-block': {
-            backgroundColor: 'green',
-            opacity: 0.5,
-            border: '1px solid black',
+            // border: '1px solid black',
+            cursor: 'pointer',
           },
         },
         position: 'relative',
