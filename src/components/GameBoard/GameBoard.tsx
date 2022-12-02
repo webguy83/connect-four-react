@@ -122,7 +122,7 @@ export default function GameBoard(props: GameBoardProps) {
                   </Box>
                   {makeHiddenDivs()}
                 </div>
-                {makeHiddenDivs()}
+
                 <ConnectFourGridWhite />
                 <ConnectFourGridBlack />
               </div>

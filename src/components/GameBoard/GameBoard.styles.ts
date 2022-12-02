@@ -29,7 +29,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   },
   '.scores': {
     display: 'flex',
-    px: '2rem',
+    px: '3rem',
     my: '6rem',
     [theme.breakpoints.up('sm')]: {
       my: '1rem',
@@ -81,7 +81,6 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
           zIndex: 5,
 
           '.invisible-block': {
-            border: '1px solid black',
             cursor: 'pointer',
           },
         },
