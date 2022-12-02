@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import PillButton from '../Buttons/PillButton';
 import ConnectFourGridBlack from '../GameObjects/BoardGrid/ConnectFourGridBlack';
@@ -26,11 +26,27 @@ export default function GameBoard(props: GameBoardProps) {
   const blockRef = useRef<HTMLDivElement>(null);
   const [lowerBarHeight, setLowerBarHeight] = useState<number>(0);
   const [openPauseMenu, setOpenPauseMenu] = useState(false);
+  const [pieces, setPieces] = useState(Array(COLUMNS * ROWS).fill(null));
+  const [markerPos, setMarkerPos] = useState<number | null>(-100000000);
+  const [showMarker, setShowMarker] = useState<boolean>(false);
 
   const onWindowResize = useCallback(() => {
     addBarHeight();
+    checkToDisplayMarker();
   }, []);
 
+  function onMouseEnterPiece(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    if (showMarker) {
+      const elm = e.target as HTMLDivElement;
+      setMarkerPos(elm.offsetLeft + elm.offsetWidth / 2 - 19);
+    }
+  }
+
+  function onMouseLeavePiece() {
+    if (showMarker) {
+      setMarkerPos(-100000000);
+    }
+  }
   useEffect(() => {
     addBarHeight();
     window.addEventListener('resize', onWindowResize);
@@ -41,21 +57,25 @@ export default function GameBoard(props: GameBoardProps) {
   }, [onWindowResize]);
 
   const onPieceClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const attr = (e.target as HTMLDivElement).getAttribute('data-attr');
-    if (attr) {
-      const d = attr;
-      console.log(d);
-      // console.log((e.target as HTMLDivElement).getBoundingClientRect());
-    }
+    const elm = e.target as HTMLDivElement;
+    const attr = elm.getAttribute('data-attr')!;
+    const pieceIndex = parseInt(attr);
   };
 
-  const makeHiddenDivs = () => {
-    const arr = Array(COLUMNS * ROWS).fill(null);
-    const invisibleBlocks = arr.map((_, i) => {
-      return <div data-attr={{ bunk: i }} onClick={(e) => onPieceClick(e)} key={i} className='invisible-block'></div>;
+  function makeHiddenDivs() {
+    const invisibleBlocks = pieces.map((_, i) => {
+      return <div data-attr={i} onMouseEnter={(e) => onMouseEnterPiece(e)} onMouseLeave={onMouseLeavePiece} onClick={(e) => onPieceClick(e)} key={i} className='invisible-block'></div>;
     });
-    return <div className='invisible-blocks-container'>{invisibleBlocks}</div>;
-  };
+    return invisibleBlocks;
+  }
+
+  function checkToDisplayMarker() {
+    if (window.innerWidth < 1080) {
+      setShowMarker(false);
+    } else {
+      setShowMarker(true);
+    }
+  }
 
   function addBarHeight() {
     if (blockRef.current) {
@@ -83,9 +103,25 @@ export default function GameBoard(props: GameBoardProps) {
             <ScoreBox Icon={<PlayerTwo />} iconPlacement='right' playerText='Player 2' />
           </div>
           <div className='board'>
-            <MarkerIcon />
             <div className='grid'>
               <div className='connectFour'>
+                <div className='invisible-blocks-container'>
+                  <Box
+                    sx={(theme) => ({
+                      display: 'none',
+                      [theme.breakpoints.up('mdlg')]: {
+                        display: 'block',
+                      },
+                      position: 'absolute',
+                      top: -45,
+                      left: markerPos,
+                      transition: 'all .25s cubic-bezier(0.4, 0, 0.2, 1)',
+                    })}
+                  >
+                    <MarkerIcon />
+                  </Box>
+                  {makeHiddenDivs()}
+                </div>
                 {makeHiddenDivs()}
                 <ConnectFourGridWhite />
                 <ConnectFourGridBlack />

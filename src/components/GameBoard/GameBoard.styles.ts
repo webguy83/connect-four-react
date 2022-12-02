@@ -22,6 +22,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   },
   '.group': {
     mx: 'auto',
+    overflow: 'hidden',
     [theme.breakpoints.up('mdlg')]: {
       mx: '5rem',
     },
@@ -57,16 +58,6 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       mt: '5rem',
     },
 
-    '.marker-icon': {
-      display: 'none',
-      // [theme.breakpoints.up('mdlg')]: {
-      //   display: 'block',
-      // },
-      position: 'absolute',
-      top: -37,
-      left: 470,
-    },
-
     '.grid': {
       width: 'clamp(36rem, 90vw, 63rem)',
 
@@ -90,7 +81,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
           zIndex: 5,
 
           '.invisible-block': {
-            // border: '1px solid black',
+            border: '1px solid black',
             cursor: 'pointer',
           },
         },
