@@ -14,6 +14,7 @@ import Modal from '@mui/material/Modal';
 import PauseMenu from '../PauseMenu/PauseMenu';
 import { GameState } from '../../utils/Types';
 import MarkerIcon from '../Icons/MarkerIcon';
+import Piece from '../Icons/Piece';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -26,9 +27,9 @@ export default function GameBoard(props: GameBoardProps) {
   const blockRef = useRef<HTMLDivElement>(null);
   const [lowerBarHeight, setLowerBarHeight] = useState<number>(0);
   const [openPauseMenu, setOpenPauseMenu] = useState(false);
-  const [pieces, setPieces] = useState(Array(COLUMNS * ROWS).fill(null));
+  const [pieceContainers, setPieceContainers] = useState(Array(COLUMNS * ROWS).fill(null));
   const [markerPos, setMarkerPos] = useState<number | null>(-100000000);
-  const [showMarker, setShowMarker] = useState<boolean>(false);
+  const [showMarker, setShowMarker] = useState<boolean>(true);
 
   const onWindowResize = useCallback(() => {
     addBarHeight();
@@ -57,16 +58,29 @@ export default function GameBoard(props: GameBoardProps) {
   }, [onWindowResize]);
 
   const onPieceClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
     const elm = e.target as HTMLDivElement;
     const attr = elm.getAttribute('data-attr')!;
     const pieceIndex = parseInt(attr);
+    setMarkerPos(-100000000);
   };
 
   function makeHiddenDivs() {
-    const invisibleBlocks = pieces.map((_, i) => {
+    const invisibleBlocks = pieceContainers.map((_, i) => {
       return <div data-attr={i} onMouseEnter={(e) => onMouseEnterPiece(e)} onMouseLeave={onMouseLeavePiece} onClick={(e) => onPieceClick(e)} key={i} className='invisible-block'></div>;
     });
     return invisibleBlocks;
+  }
+
+  function makePieceDivs() {
+    const blocks = pieceContainers.map((_, i) => {
+      return (
+        <div data-attr={i} key={i} className='piece-block'>
+          <Piece />
+        </div>
+      );
+    });
+    return blocks;
   }
 
   function checkToDisplayMarker() {
@@ -105,26 +119,36 @@ export default function GameBoard(props: GameBoardProps) {
           <div className='board'>
             <div className='grid'>
               <div className='connectFour'>
-                <div className='invisible-blocks-container'>
-                  <Box
-                    sx={(theme) => ({
-                      display: 'none',
-                      [theme.breakpoints.up('mdlg')]: {
-                        display: 'block',
-                      },
-                      position: 'absolute',
-                      top: -45,
-                      left: markerPos,
-                      transition: 'all .25s cubic-bezier(0.4, 0, 0.2, 1)',
-                    })}
-                  >
-                    <MarkerIcon />
+                <Box
+                  sx={{
+                    position: 'relative',
+                  }}
+                >
+                  <Box className='invisible-blocks-container' zIndex={10}>
+                    {makeHiddenDivs()}
                   </Box>
-                  {makeHiddenDivs()}
-                </div>
+                  <ConnectFourGridWhite />
 
-                <ConnectFourGridWhite />
-                <ConnectFourGridBlack />
+                  <Box className='invisible-blocks-container' zIndex={0}>
+                    <Box
+                      sx={(theme) => ({
+                        display: 'none',
+
+                        [theme.breakpoints.up('mdlg')]: {
+                          display: 'block',
+                        },
+                        position: 'absolute',
+                        top: -45,
+                        left: markerPos,
+                        transition: 'all .25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      })}
+                    >
+                      <MarkerIcon />
+                    </Box>
+                    {makePieceDivs()}
+                  </Box>
+                  <ConnectFourGridBlack />
+                </Box>
               </div>
               <div ref={blockRef} className='lower-block'>
                 {/* <WinnerBox /> */}

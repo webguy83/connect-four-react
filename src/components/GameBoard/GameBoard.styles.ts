@@ -71,6 +71,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
           display: 'grid',
           gridTemplateColumns: 'repeat(7, 1fr)',
           position: 'absolute',
+          top: 0,
           width: '97.5%',
           height: '89%',
           [theme.breakpoints.up('sm')]: {
@@ -78,20 +79,21 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
           },
           mt: '1.1%',
           ml: '1.2%',
-          zIndex: 5,
 
           '.invisible-block': {
             cursor: 'pointer',
           },
         },
         position: 'relative',
-        '& > svg': {
-          '&:last-of-type': {
-            position: 'absolute',
-            top: '.3rem',
-            left: 0,
-            zIndex: -1,
-          },
+        '.white-grid': {
+          position: 'relative',
+          zIndex: 1,
+        },
+        '.black-grid': {
+          position: 'absolute',
+          top: '.3rem',
+          left: 0,
+          zIndex: -1,
         },
       },
     },
@@ -100,11 +102,22 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       justifyContent: 'center',
       alignItems: 'center',
       position: 'relative',
+      zIndex: 10,
       marginTop: '-3rem',
       [theme.breakpoints.up('sm')]: {
         marginTop: '-5rem',
       },
     },
+    '.piece-block': {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'flex-end',
+    },
+  },
+  '.piece': {
+    //visibility: 'hidden',
+    width: '85%',
+    height: '90%',
   },
 });
 
