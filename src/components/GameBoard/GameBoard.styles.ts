@@ -11,7 +11,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       display: 'block',
     },
   },
-  '& header': {
+  '.game-board-header': {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -20,14 +20,14 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       minWidth: '10.8rem',
     },
   },
-  '.group': {
+  '.central-content': {
     mx: 'auto',
     overflow: 'hidden',
     [theme.breakpoints.up('mdlg')]: {
       mx: '5rem',
     },
   },
-  '.scores': {
+  '.horizontal-scores': {
     display: 'flex',
     px: '3rem',
     my: '6rem',
@@ -51,53 +51,44 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
     },
   },
 
-  '& .board': {
+  '.board': {
     position: 'relative',
+    width: 'clamp(36rem, 90vw, 63rem)',
     mt: '2.5rem',
     [theme.breakpoints.up('mdlg')]: {
       mt: '5rem',
     },
+    '.connectFour': {
+      '.invisible-blocks-container': {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(7, 1fr)',
+        position: 'absolute',
+        top: 0,
+        width: '97.5%',
+        height: '89%',
+        [theme.breakpoints.up('sm')]: {
+          height: '89.5%',
+        },
+        mt: '1.1%',
+        ml: '1.2%',
 
-    '.grid': {
-      width: 'clamp(36rem, 90vw, 63rem)',
-
-      '.winner-box': {
-        width: '80%',
-        maxWidth: '28rem',
+        '.invisible-block': {
+          cursor: 'pointer',
+        },
       },
-
-      '.connectFour': {
-        '.invisible-blocks-container': {
-          display: 'grid',
-          gridTemplateColumns: 'repeat(7, 1fr)',
-          position: 'absolute',
-          top: 0,
-          width: '97.5%',
-          height: '89%',
-          [theme.breakpoints.up('sm')]: {
-            height: '89.5%',
-          },
-          mt: '1.1%',
-          ml: '1.2%',
-
-          '.invisible-block': {
-            cursor: 'pointer',
-          },
-        },
+      position: 'relative',
+      '.white-grid': {
         position: 'relative',
-        '.white-grid': {
-          position: 'relative',
-          zIndex: 1,
-        },
-        '.black-grid': {
-          position: 'absolute',
-          top: '.3rem',
-          left: 0,
-          zIndex: -1,
-        },
+        zIndex: 1,
+      },
+      '.black-grid': {
+        position: 'absolute',
+        top: '.3rem',
+        left: 0,
+        zIndex: -1,
       },
     },
-    '.lower-block': {
+    '.timer-container': {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',

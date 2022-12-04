@@ -106,54 +106,52 @@ export default function GameBoard(props: GameBoardProps) {
     <>
       <Box sx={gameBoardContainerStyles}>
         <ScoreBox Icon={<PlayerOne />} playerText='Player 1' />
-        <div className='group'>
-          <header>
+        <div className='central-content'>
+          <header className='game-board-header'>
             <PillButton onClick={() => setOpenPauseMenu(true)}>Menu</PillButton>
             <Logo />
             <PillButton>Restart</PillButton>
           </header>
-          <div className='scores'>
+          <div className='horizontal-scores'>
             <ScoreBox Icon={<PlayerOne />} iconPlacement='left' playerText='Player 1' />
             <ScoreBox Icon={<PlayerTwo />} iconPlacement='right' playerText='Player 2' />
           </div>
           <div className='board'>
-            <div className='grid'>
-              <div className='connectFour'>
-                <Box
-                  sx={{
-                    position: 'relative',
-                  }}
-                >
-                  <Box className='invisible-blocks-container' zIndex={10}>
-                    {makeHiddenDivs()}
-                  </Box>
-                  <ConnectFourGridWhite />
-
-                  <Box className='invisible-blocks-container' zIndex={0}>
-                    <Box
-                      sx={(theme) => ({
-                        display: 'none',
-
-                        [theme.breakpoints.up('mdlg')]: {
-                          display: 'block',
-                        },
-                        position: 'absolute',
-                        top: -45,
-                        left: markerPos,
-                        transition: 'all .25s cubic-bezier(0.4, 0, 0.2, 1)',
-                      })}
-                    >
-                      <MarkerIcon />
-                    </Box>
-                    {makePieceDivs()}
-                  </Box>
-                  <ConnectFourGridBlack />
+            <div className='connectFour'>
+              <Box
+                sx={{
+                  position: 'relative',
+                }}
+              >
+                <Box className='invisible-blocks-container' zIndex={10}>
+                  {makeHiddenDivs()}
                 </Box>
-              </div>
-              <div ref={blockRef} className='lower-block'>
-                {/* <WinnerBox /> */}
-                <TimerBox />
-              </div>
+                <ConnectFourGridWhite />
+
+                <Box className='invisible-blocks-container' zIndex={0}>
+                  <Box
+                    sx={(theme) => ({
+                      display: 'none',
+
+                      [theme.breakpoints.up('mdlg')]: {
+                        display: 'block',
+                      },
+                      position: 'absolute',
+                      top: -45,
+                      left: markerPos,
+                      transition: 'all .25s cubic-bezier(0.4, 0, 0.2, 1)',
+                    })}
+                  >
+                    <MarkerIcon />
+                  </Box>
+                  {makePieceDivs()}
+                </Box>
+                <ConnectFourGridBlack />
+              </Box>
+            </div>
+            <div ref={blockRef} className='timer-container'>
+              {/* <WinnerBox /> */}
+              <TimerBox />
             </div>
           </div>
         </div>
