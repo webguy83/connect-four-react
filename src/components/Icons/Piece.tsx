@@ -1,6 +1,9 @@
-export default function Piece() {
+import { Box } from '@mui/material';
+import { forwardRef } from 'react';
+
+export default forwardRef((props, ref) => {
   return (
-    <svg className='piece' width='70px' height='75px' viewBox='0 0 70 75' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlnsXlink='http://www.w3.org/1999/xlink'>
+    <Box component='svg' ref={ref} className='piece' width='70px' height='75px' viewBox='0 0 70 75' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlnsXlink='http://www.w3.org/1999/xlink'>
       <title>counter-red-large</title>
       <defs>
         <circle id='path-1-piece' cx='35' cy='35' r='32'></circle>
@@ -20,6 +23,6 @@ export default function Piece() {
           </g>
         </g>
       </g>
-    </svg>
+    </Box>
   );
-}
+});

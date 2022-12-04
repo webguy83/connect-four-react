@@ -1,4 +1,4 @@
-import { Box, Fade } from '@mui/material';
+import { Box, Slide } from '@mui/material';
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import PillButton from '../Buttons/PillButton';
 import ConnectFourGridBlack from '../GameObjects/BoardGrid/ConnectFourGridBlack';
@@ -20,16 +20,26 @@ interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
 }
 
+type Owner = 'main-player' | 'opponent' | null;
+
+interface PieceData {
+  owner: Owner;
+}
+
 const COLUMNS = 7;
 const ROWS = 6;
 
+const emptyArrayOfVals = Array(COLUMNS * ROWS).fill(null);
+
 export default function GameBoard(props: GameBoardProps) {
   const blockRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   const [lowerBarHeight, setLowerBarHeight] = useState<number>(0);
   const [openPauseMenu, setOpenPauseMenu] = useState(false);
-  const [pieceContainers, setPieceContainers] = useState(Array(COLUMNS * ROWS).fill(null));
+  const [pieceContainers, setPieceContainers] = useState<PieceData[]>(emptyArrayOfVals);
   const [markerPos, setMarkerPos] = useState<number | null>(-100000000);
   const [showMarker, setShowMarker] = useState<boolean>(true);
+  const [slideDown, setSlideDown] = useState(false);
 
   const onWindowResize = useCallback(() => {
     addBarHeight();
@@ -58,25 +68,35 @@ export default function GameBoard(props: GameBoardProps) {
   }, [onWindowResize]);
 
   const onPieceClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.stopPropagation();
     const elm = e.target as HTMLDivElement;
-    const attr = elm.getAttribute('data-attr')!;
+    const attr = elm.getAttribute('data-index')!;
     const pieceIndex = parseInt(attr);
     setMarkerPos(-100000000);
+    setPieceContainers((oldPieces) => {
+      const modifiedPieces = [...oldPieces];
+      modifiedPieces[pieceIndex] = {
+        owner: 'main-player',
+      };
+      return modifiedPieces;
+    });
   };
 
   function makeHiddenDivs() {
-    const invisibleBlocks = pieceContainers.map((_, i) => {
-      return <div data-attr={i} onMouseEnter={(e) => onMouseEnterPiece(e)} onMouseLeave={onMouseLeavePiece} onClick={(e) => onPieceClick(e)} key={i} className='invisible-block'></div>;
+    const invisibleBlocks = emptyArrayOfVals.map((_, i) => {
+      return <div data-index={i} onMouseEnter={(e) => onMouseEnterPiece(e)} onMouseLeave={onMouseLeavePiece} onClick={(e) => onPieceClick(e)} key={i} className='invisible-block'></div>;
     });
     return invisibleBlocks;
   }
 
   function makePieceDivs() {
-    const blocks = pieceContainers.map((_, i) => {
+    const blocks = pieceContainers.map((piece, i) => {
       return (
-        <div data-attr={i} key={i} className='piece-block'>
-          <Piece />
+        <div data-index={i} key={i} className='piece-block'>
+          {piece && (
+            <Slide in={piece.owner === 'main-player'} direction='down' container={gridRef.current}>
+              <Piece />
+            </Slide>
+          )}
         </div>
       );
     });
@@ -117,19 +137,19 @@ export default function GameBoard(props: GameBoardProps) {
             <ScoreBox Icon={<PlayerTwo />} iconPlacement='right' playerText='Player 2' />
           </div>
           <div className='board'>
-            <div className='connectFour'>
+            <div ref={gridRef} className='connectFour'>
               <Box
                 sx={{
                   position: 'relative',
                 }}
               >
-                <Box className='invisible-blocks-container' zIndex={10}>
+                {/* <Box className='invisible-blocks-container' zIndex={10}>
                   {makeHiddenDivs()}
-                </Box>
+                </Box> */}
                 <ConnectFourGridWhite />
 
                 <Box className='invisible-blocks-container' zIndex={0}>
-                  <Box
+                  {/* <Box
                     sx={(theme) => ({
                       display: 'none',
 
@@ -143,7 +163,7 @@ export default function GameBoard(props: GameBoardProps) {
                     })}
                   >
                     <MarkerIcon />
-                  </Box>
+                  </Box> */}
                   {makePieceDivs()}
                 </Box>
                 <ConnectFourGridBlack />
