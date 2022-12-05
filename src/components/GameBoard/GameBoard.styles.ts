@@ -100,14 +100,14 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
         marginTop: '-5rem',
       },
     },
-    '.piece-block': {
+    '.player-chip-block': {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'flex-end',
       position: 'relative',
     },
   },
-  '.piece': {
+  '.player-chip': {
     //visibility: 'hidden',
     width: '85%',
     height: '90%',

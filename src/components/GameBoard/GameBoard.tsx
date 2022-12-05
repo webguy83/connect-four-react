@@ -14,7 +14,6 @@ import Modal from '@mui/material/Modal';
 import PauseMenu from '../PauseMenu/PauseMenu';
 import { GameState } from '../../utils/Types';
 import MarkerIcon from '../Icons/MarkerIcon';
-import Piece from '../Icons/Piece';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -67,41 +66,41 @@ export default function GameBoard(props: GameBoardProps) {
     };
   }, [onWindowResize]);
 
-  const onPieceClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const elm = e.target as HTMLDivElement;
-    const attr = elm.getAttribute('data-index')!;
-    const pieceIndex = parseInt(attr);
-    setMarkerPos(-100000000);
-    setPieceContainers((oldPieces) => {
-      const modifiedPieces = [...oldPieces];
-      modifiedPieces[pieceIndex] = {
-        owner: 'main-player',
-      };
-      return modifiedPieces;
-    });
-  };
+  // const onPieceClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  //   const elm = e.target as HTMLDivElement;
+  //   const attr = elm.getAttribute('data-index')!;
+  //   const pieceIndex = parseInt(attr);
+  //   setMarkerPos(-100000000);
+  //   setPieceContainers((oldPieces) => {
+  //     const modifiedPieces = [...oldPieces];
+  //     modifiedPieces[pieceIndex] = {
+  //       owner: 'main-player',
+  //     };
+  //     return modifiedPieces;
+  //   });
+  // };
 
-  function makeHiddenDivs() {
-    const invisibleBlocks = emptyArrayOfVals.map((_, i) => {
-      return <div data-index={i} onMouseEnter={(e) => onMouseEnterPiece(e)} onMouseLeave={onMouseLeavePiece} onClick={(e) => onPieceClick(e)} key={i} className='invisible-block'></div>;
-    });
-    return invisibleBlocks;
-  }
+  // function makeHiddenDivs() {
+  //   const invisibleBlocks = emptyArrayOfVals.map((_, i) => {
+  //     return <div data-index={i} onMouseEnter={(e) => onMouseEnterPiece(e)} onMouseLeave={onMouseLeavePiece} onClick={(e) => onPieceClick(e)} key={i} className='invisible-block'></div>;
+  //   });
+  //   return invisibleBlocks;
+  // }
 
-  function makePieceDivs() {
-    const blocks = pieceContainers.map((piece, i) => {
-      return (
-        <div data-index={i} key={i} className='piece-block'>
-          {piece && (
-            <Slide in={piece.owner === 'main-player'} direction='down' container={gridRef.current}>
-              <Piece />
-            </Slide>
-          )}
-        </div>
-      );
-    });
-    return blocks;
-  }
+  // function makePieceDivs() {
+  //   const blocks = pieceContainers.map((playerChip, i) => {
+  //     return (
+  //       <div data-index={i} key={i} className='player-chip-block'>
+  //         {playerChip && (
+  //           <Slide in={playerChip.owner === 'main-player'} direction='down' container={gridRef.current}>
+  //             <PlayerChip />
+  //           </Slide>
+  //         )}
+  //       </div>
+  //     );
+  //   });
+  //   return blocks;
+  // }
 
   function checkToDisplayMarker() {
     if (window.innerWidth < 1080) {
@@ -148,8 +147,8 @@ export default function GameBoard(props: GameBoardProps) {
                 </Box> */}
                 <ConnectFourGridWhite />
 
-                <Box className='invisible-blocks-container' zIndex={0}>
-                  {/* <Box
+                {/* <Box className='invisible-blocks-container' zIndex={0}>
+                  <Box
                     sx={(theme) => ({
                       display: 'none',
 
@@ -163,9 +162,9 @@ export default function GameBoard(props: GameBoardProps) {
                     })}
                   >
                     <MarkerIcon />
-                  </Box> */}
-                  {makePieceDivs()}
-                </Box>
+                  </Box> }
+                  { {makePieceDivs()}
+                </Box> */}
                 <ConnectFourGridBlack />
               </Box>
             </div>
