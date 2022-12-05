@@ -1,4 +1,4 @@
-import { Hidden, SxProps, Theme } from '@mui/material';
+import { SxProps, Theme } from '@mui/material';
 
 export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   display: 'flex',
@@ -59,24 +59,6 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       mt: '5rem',
     },
     '.connectFour': {
-      '.invisible-blocks-container': {
-        display: 'grid',
-
-        gridTemplateColumns: 'repeat(7, 1fr)',
-        position: 'absolute',
-        top: 0,
-        width: '97.5%',
-        height: '89%',
-        [theme.breakpoints.up('sm')]: {
-          height: '89.5%',
-        },
-        mt: '1.1%',
-        ml: '1.2%',
-
-        '.invisible-block': {
-          cursor: 'pointer',
-        },
-      },
       position: 'relative',
       '.white-grid': {
         position: 'relative',
@@ -106,11 +88,6 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
       alignItems: 'flex-end',
       position: 'relative',
     },
-  },
-  '.player-chip': {
-    //visibility: 'hidden',
-    width: '85%',
-    height: '90%',
   },
 });
 

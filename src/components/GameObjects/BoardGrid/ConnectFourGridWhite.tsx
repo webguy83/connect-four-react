@@ -46,10 +46,10 @@ export default function ConnectFourGridWhite() {
     let rect = rectAreaData[indexCounter];
     if (rect) {
       occupyPlayer(rect, indexCounter);
+      if (indexCounter < COLUMNS) {
+        addFullColumn(indexCounter - COLUMNS);
+      }
     } else {
-      addFullColumn(indexCounter);
-    }
-    if (indexCounter - COLUMNS <= 0) {
       addFullColumn(indexCounter);
     }
   };
