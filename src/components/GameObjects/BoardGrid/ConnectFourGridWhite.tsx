@@ -17,6 +17,7 @@ export default function ConnectFourGridWhite() {
   const [playerChips, showPlayerChips] = useState<JSX.Element[]>([]);
   const [rectAreaData, setRectAreaData] = useState<RectAreaData[]>([]);
   const [markerPos, setMarkerPos] = useState<number | null>(-100000000);
+  const [currentPlayer, setCurrentPlayer] = useState<Player>('main-player');
 
   const COLUMNS = 7;
   const ROWS = 6;
@@ -53,6 +54,7 @@ export default function ConnectFourGridWhite() {
     if (rectAreaData[index].fullColumn) {
       return;
     }
+
     let indexCounter = index;
     if (rectAreaData[indexCounter]?.occupiedBy) {
       while (indexCounter >= 0 && rectAreaData[indexCounter]?.occupiedBy) {
@@ -72,6 +74,12 @@ export default function ConnectFourGridWhite() {
       }
     } else {
       addFullColumn(indexCounter);
+    }
+
+    if (currentPlayer === 'main-player') {
+      setCurrentPlayer('opponent');
+    } else {
+      setCurrentPlayer('main-player');
     }
   };
 
