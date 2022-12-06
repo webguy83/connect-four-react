@@ -45,18 +45,6 @@ export default function GameBoard(props: GameBoardProps) {
     checkToDisplayMarker();
   }, []);
 
-  function onMouseEnterPiece(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
-    if (showMarker) {
-      const elm = e.target as HTMLDivElement;
-      setMarkerPos(elm.offsetLeft + elm.offsetWidth / 2 - 19);
-    }
-  }
-
-  function onMouseLeavePiece() {
-    if (showMarker) {
-      setMarkerPos(-100000000);
-    }
-  }
   useEffect(() => {
     addBarHeight();
     window.addEventListener('resize', onWindowResize);
