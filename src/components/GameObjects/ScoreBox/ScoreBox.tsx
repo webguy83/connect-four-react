@@ -1,10 +1,12 @@
 import { Box, Theme } from '@mui/material';
+import { OpponentName } from '../../../utils/Types';
 import { scoreBoxContainerStyles } from './ScopeBox.styles';
 
 interface ScoreBoxProps {
   Icon: JSX.Element;
   playerText: string;
   iconPlacement?: 'right' | 'left';
+  reverseText?: boolean;
 }
 
 export default function ScoreBox(props: ScoreBoxProps) {
@@ -21,7 +23,7 @@ export default function ScoreBox(props: ScoreBoxProps) {
           [theme.breakpoints.up('sm')]: {
             flexDirection: 'row',
           },
-          ...(props.playerText === 'Player 2' && {
+          ...(props.reverseText && {
             [theme.breakpoints.up('sm')]: {
               flexDirection: 'row-reverse',
             },

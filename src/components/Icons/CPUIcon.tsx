@@ -1,4 +1,4 @@
-export default function CPU() {
+export default function CPUIcon() {
   return (
     <svg width='54px' height='59px' viewBox='0 0 54 59' version='1.1' xmlns='http://www.w3.org/2000/svg'>
       <title>cpu</title>

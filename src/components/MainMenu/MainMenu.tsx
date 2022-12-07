@@ -7,10 +7,11 @@ import { MainMenuContainerStyle } from './MainMenu.styles';
 import RectangleButton from '../Buttons/RectangleButton';
 import { Fade, GlobalStyles } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
-import { GameState } from '../../utils/Types';
+import { GameState, OpponentName } from '../../utils/Types';
 
 interface MainMenuProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
+  setOpponentName: Dispatch<SetStateAction<OpponentName>>;
 }
 
 export default function MainMenu(props: MainMenuProps) {
@@ -31,7 +32,13 @@ export default function MainMenu(props: MainMenuProps) {
     props.setGameState('rules');
   }
 
-  function onGameBoardClicked() {
+  function onPlayer2BtnClicked() {
+    props.setOpponentName('Player 2');
+    props.setGameState('game-board');
+  }
+
+  function onCpuBtnClicked() {
+    props.setOpponentName('CPU');
     props.setGameState('game-board');
   }
 
@@ -44,10 +51,10 @@ export default function MainMenu(props: MainMenuProps) {
             <Logo />
           </Box>
           <Stack spacing={3}>
-            <RectangleButton className='playVsCpu' variant='contained' endIcon={<PlayerVsCpuIcon />}>
+            <RectangleButton className='playVsCpu' onClick={onCpuBtnClicked} variant='contained' endIcon={<PlayerVsCpuIcon />}>
               <Box component='span'>Play vs CPU</Box>
             </RectangleButton>
-            <RectangleButton className='playVsPlayer' onClick={onGameBoardClicked} variant='contained' endIcon={<PlayerVsPlayerIcon />}>
+            <RectangleButton className='playVsPlayer' onClick={onPlayer2BtnClicked} variant='contained' endIcon={<PlayerVsPlayerIcon />}>
               <Box component='span' className='text'>
                 Play vs Player
               </Box>

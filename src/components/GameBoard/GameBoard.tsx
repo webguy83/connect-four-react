@@ -12,11 +12,13 @@ import Logo from '../Logo/Logo';
 import { bottomBarStyles, gameBoardContainerStyles } from './GameBoard.styles';
 import Modal from '@mui/material/Modal';
 import PauseMenu from '../PauseMenu/PauseMenu';
-import { GameState, Player } from '../../utils/Types';
+import { GameState, OpponentName, Player } from '../../utils/Types';
 import { mainColour } from '../../CustomTheme';
+import CPUIcon from '../Icons/CPUIcon';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
+  opponentName: OpponentName;
 }
 
 export default function GameBoard(props: GameBoardProps) {
@@ -62,7 +64,7 @@ export default function GameBoard(props: GameBoardProps) {
             </header>
             <div className='horizontal-scores'>
               <ScoreBox Icon={<PlayerOne />} iconPlacement='left' playerText='Player 1' />
-              <ScoreBox Icon={<PlayerTwo />} iconPlacement='right' playerText='Player 2' />
+              <ScoreBox Icon={props.opponentName === 'Player 2' ? <PlayerTwo /> : <CPUIcon />} iconPlacement='right' playerText={props.opponentName} reverseText />
             </div>
             <div className='board'>
               <div className='connectFour'>
@@ -72,12 +74,12 @@ export default function GameBoard(props: GameBoardProps) {
               <div ref={blockRef} className='timer-container'>
                 {/* <WinnerBox /> */}
                 <Fade in={true}>
-                  <TimerBox playerColour={currentPlayer === 'main' ? mainColour.main : mainColour.opponent} />
+                  <TimerBox opponentName={props.opponentName} playerColour={currentPlayer === 'main' ? mainColour.main : mainColour.opponent} />
                 </Fade>
               </div>
             </div>
           </div>
-          <ScoreBox Icon={<PlayerTwo />} playerText='Player 2' />
+          <ScoreBox Icon={props.opponentName === 'Player 2' ? <PlayerTwo /> : <CPUIcon />} playerText={props.opponentName} />
         </Box>
         <Box sx={bottomBarStyles} height={lowerBarHeight}></Box>
         <Modal open={openPauseMenu} onClose={closeRules} aria-labelledby='rules-title' aria-describedby='rules-description'>

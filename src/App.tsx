@@ -7,19 +7,20 @@ import GameBoard from './components/GameBoard/GameBoard';
 import MainMenu from './components/MainMenu/MainMenu';
 import Rules from './components/Rules/Rules';
 import themeOptions from './CustomTheme';
-import { GameState } from './utils/Types';
+import { GameState, OpponentName } from './utils/Types';
 
 const theme = createTheme(themeOptions);
 
 function App() {
   const [gameState, setGameState] = useState<GameState>('game-board');
+  const [opponentName, setOpponentName] = useState<OpponentName>('Player 2');
   return (
     <Box className='app' mx={gameState === 'game-board' ? 0 : '2rem'}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {gameState === 'main-menu' && <MainMenu setGameState={setGameState} />}
+        {gameState === 'main-menu' && <MainMenu setOpponentName={setOpponentName} setGameState={setGameState} />}
         {gameState === 'rules' && <Rules setGameState={setGameState} />}
-        {gameState === 'game-board' && <GameBoard setGameState={setGameState} />}
+        {gameState === 'game-board' && <GameBoard opponentName={opponentName} setGameState={setGameState} />}
       </ThemeProvider>
     </Box>
   );
