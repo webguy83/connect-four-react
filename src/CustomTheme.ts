@@ -1,4 +1,5 @@
 import { Theme, ThemeOptions } from '@mui/material';
+import { mainTransition } from './utils/Styles';
 
 declare module '@mui/material/styles' {
   interface BreakpointOverrides {
@@ -10,6 +11,13 @@ declare module '@mui/material/styles' {
     xl: true;
   }
 }
+
+export const mainColour = {
+  main: '#FD6687',
+  opponent: '#FFCE67',
+  dark: '#000000',
+  light: '#FFFFFF',
+};
 
 const themeOptions: ThemeOptions = {
   breakpoints: {
@@ -41,12 +49,12 @@ const themeOptions: ThemeOptions = {
     primary: {
       light: '#7945FF',
       main: '#5C2DD5',
-      dark: '#000000',
+      dark: mainColour.dark,
     },
     secondary: {
-      light: '#FFFFFF',
-      main: '#FFCE67',
-      dark: '#FD6687',
+      light: mainColour.light,
+      main: mainColour.opponent,
+      dark: mainColour.main,
     },
   },
   components: {
@@ -80,10 +88,10 @@ const themeOptions: ThemeOptions = {
       styleOverrides: {
         root: {
           '& circle': {
-            transition: 'fill .25s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: `fill ${mainTransition}`,
           },
           '&:hover circle': {
-            transition: 'fill .25s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: `fill ${mainTransition}`,
           },
         },
       },

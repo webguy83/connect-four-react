@@ -13,13 +13,11 @@ export const timerBoxRootStyles: SxProps<Theme> = (theme) => ({
 
     '.playerText': {
       textTransform: 'uppercase',
-      color: theme.palette.secondary.light,
     },
 
     '.timer': {
       m: 0,
       fontSize: '5.6rem',
-      color: theme.palette.secondary.light,
     },
   },
 });

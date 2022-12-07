@@ -1,4 +1,8 @@
-export default function MarkerIcon() {
+interface MarkerIconProps {
+  colour: string;
+}
+
+export default function MarkerIcon(props: MarkerIconProps) {
   return (
     <svg className='marker-icon' width='38' height='36' xmlns='http://www.w3.org/2000/svg' xmlnsXlink='http://www.w3.org/1999/xlink'>
       <defs>
@@ -16,7 +20,7 @@ export default function MarkerIcon() {
           stroke='#000'
           strokeWidth='3'
           d='M895.916 121.727a6.49 6.49 0 0 1 3.877 1.271l11.068 8.173a6.5 6.5 0 0 1 2.639 5.229v6.6a6.48 6.48 0 0 1-1.904 4.596A6.48 6.48 0 0 1 907 149.5h-22a6.48 6.48 0 0 1-4.596-1.904A6.48 6.48 0 0 1 878.5 143v-6.616a6.5 6.5 0 0 1 2.613-5.21l10.932-8.157a6.49 6.49 0 0 1 3.87-1.29Z'
-          fill='#FD6687'
+          fill={props.colour}
         />
       </g>
     </svg>

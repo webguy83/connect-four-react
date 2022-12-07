@@ -1,6 +1,8 @@
+import { mainTransition } from '../../utils/Styles';
+
 export default function TimerIcon() {
   return (
-    <svg width='197px' height='165px' version='1.1' xmlns='http://www.w3.org/2000/svg'>
+    <svg style={{ transition: `all ${mainTransition}` }} width='197px' height='165px' version='1.1' xmlns='http://www.w3.org/2000/svg'>
       <defs>
         <filter x='-4.2%' y='-4.2%' width='108.4%' height='116.2%' filterUnits='objectBoundingBox' id='a'>
           <feMorphology radius='3' operator='dilate' in='SourceAlpha' result='shadowSpreadOuter1' />
@@ -16,7 +18,7 @@ export default function TimerIcon() {
           stroke='#000'
           strokeWidth='3'
           d='M86.697 1.868a21.5 21.5 0 0 1 16.613-.03l75.96 31.65a21.478 21.478 0 0 1 9.62 7.92 21.478 21.478 0 0 1 3.61 11.925V130a21.433 21.433 0 0 1-6.297 15.203A21.433 21.433 0 0 1 171 151.5H20a21.433 21.433 0 0 1-15.203-6.297A21.433 21.433 0 0 1-1.5 130V53.28c0-4.326 1.296-8.44 3.589-11.893a21.478 21.478 0 0 1 9.568-7.923Z'
-          fill='#FD6687'
+          fill='currentColor'
         />
       </g>
     </svg>

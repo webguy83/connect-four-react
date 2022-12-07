@@ -1,9 +1,10 @@
 import { Box } from '@mui/material';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { mainColour } from '../../../CustomTheme';
+import { mainTransition } from '../../../utils/Styles';
+import { Player } from '../../../utils/Types';
 import MarkerIcon from '../../Icons/MarkerIcon';
 import PlayerChip from '../PlayerChip/PlayerChip';
-
-type Player = 'main-player' | 'opponent';
 
 interface RectAreaData {
   x: number;
@@ -12,12 +13,19 @@ interface RectAreaData {
   fullColumn?: boolean;
 }
 
-export default function ConnectFourGridWhite() {
+interface ConnectFourGridProps {
+  playerAccess: {
+    setCurrentPlayer: Dispatch<SetStateAction<Player>>;
+    currentPlayer: Player;
+  };
+}
+
+export default function ConnectFourGridWhite({ playerAccess }: ConnectFourGridProps) {
   const ref = useRef(null);
+  const disableUI = useRef<boolean>(false);
   const [playerChips, showPlayerChips] = useState<JSX.Element[]>([]);
   const [rectAreaData, setRectAreaData] = useState<RectAreaData[]>([]);
-  const [markerPos, setMarkerPos] = useState<number | null>(-100000000);
-  const [currentPlayer, setCurrentPlayer] = useState<Player>('main-player');
+  const [markerPos, setMarkerPos] = useState<number>(-100000000);
 
   const COLUMNS = 7;
   const ROWS = 6;
@@ -35,7 +43,7 @@ export default function ConnectFourGridWhite() {
     setRectAreaData(output);
   }, []);
 
-  function onMouseEnterPiece(e: React.MouseEvent<SVGRectElement, MouseEvent>, index: number) {
+  function onMouseOverPiece(e: React.MouseEvent<SVGRectElement, MouseEvent>, index: number) {
     const elm = e.target as SVGRectElement;
     const rectData = rectAreaData[index];
     if (!rectData.fullColumn) {
@@ -51,10 +59,27 @@ export default function ConnectFourGridWhite() {
   }
 
   const onRectClick = (index: number) => {
-    if (rectAreaData[index].fullColumn) {
+    if (rectAreaData[index].fullColumn || disableUI.current) {
       return;
     }
+    disableUI.current = true;
+    const adjustedIndex = assignChipToLowestSlotPossibleIndex(index);
+    const rect = rectAreaData[adjustedIndex];
+    addExtraDataToRect(rect, adjustedIndex);
+  };
 
+  function addExtraDataToRect(rect: RectAreaData, index: number) {
+    if (rect) {
+      occupyPlayer(rect, index);
+      if (index < COLUMNS) {
+        addFullColumn(index - COLUMNS);
+      }
+    } else {
+      addFullColumn(index);
+    }
+  }
+
+  function assignChipToLowestSlotPossibleIndex(index: number) {
     let indexCounter = index;
     if (rectAreaData[indexCounter]?.occupiedBy) {
       while (indexCounter >= 0 && rectAreaData[indexCounter]?.occupiedBy) {
@@ -65,33 +90,31 @@ export default function ConnectFourGridWhite() {
         indexCounter += COLUMNS;
       }
     }
+    return indexCounter;
+  }
 
-    let rect = rectAreaData[indexCounter];
-    if (rect) {
-      occupyPlayer(rect, indexCounter);
-      if (indexCounter < COLUMNS) {
-        addFullColumn(indexCounter - COLUMNS);
-      }
+  function swapToNextPlayer() {
+    if (playerAccess.currentPlayer === 'main') {
+      playerAccess.setCurrentPlayer('opponent');
     } else {
-      addFullColumn(indexCounter);
+      playerAccess.setCurrentPlayer('main');
     }
+    disableUI.current = false;
+  }
 
-    if (currentPlayer === 'main-player') {
-      setCurrentPlayer('opponent');
-    } else {
-      setCurrentPlayer('main-player');
-    }
-  };
+  function chipFinishedAnimating() {
+    swapToNextPlayer();
+  }
 
   function occupyPlayer(rect: RectAreaData, indexCounter: number) {
     const x = rect.x + 44;
     const y = rect.y + 44;
     showPlayerChips((oldValues) => {
-      return [...oldValues, <PlayerChip key={new Date().getTime()} x={x} y={y} container={ref.current} />];
+      return [...oldValues, <PlayerChip afterChipAnimated={chipFinishedAnimating} colour={playerAccess.currentPlayer === 'main' ? mainColour.main : mainColour.opponent} key={new Date().getTime()} x={x} y={y} container={ref.current} />];
     });
     setRectAreaData((oldData) => {
       const newRectAreaData = [...oldData];
-      newRectAreaData[indexCounter].occupiedBy = 'main-player';
+      newRectAreaData[indexCounter].occupiedBy = 'main';
       return newRectAreaData;
     });
   }
@@ -113,17 +136,16 @@ export default function ConnectFourGridWhite() {
       <Box
         sx={(theme) => ({
           display: 'none',
-
           [theme.breakpoints.up('mdlg')]: {
-            display: 'block',
+            display: disableUI.current ? 'none' : 'block',
           },
           position: 'absolute',
           top: -37,
           left: markerPos,
-          transition: 'all .25s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: `all ${mainTransition}`,
         })}
       >
-        <MarkerIcon />
+        <MarkerIcon colour={playerAccess.currentPlayer === 'main' ? mainColour.main : mainColour.opponent} />
       </Box>
 
       <svg ref={ref} className='white-grid' width='100%' height='100%' viewBox='0 0 632 584' xmlns='http://www.w3.org/2000/svg'>
@@ -139,9 +161,9 @@ export default function ConnectFourGridWhite() {
           return (
             <rect
               key={i}
-              style={{ cursor: data.fullColumn ? 'default' : 'pointer' }}
+              style={{ cursor: data.fullColumn || disableUI.current ? 'default' : 'pointer' }}
               onClick={() => onRectClick(i)}
-              onMouseEnter={(e) => onMouseEnterPiece(e, i)}
+              onMouseOver={(e) => onMouseOverPiece(e, i)}
               onMouseLeave={() => onMouseLeavePiece(i)}
               width='88'
               height='88'

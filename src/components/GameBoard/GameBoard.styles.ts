@@ -3,6 +3,7 @@ import { SxProps, Theme } from '@mui/material';
 export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'center',
   position: 'relative',
   zIndex: 1,
   '& > .scoreBox': {

@@ -7,3 +7,5 @@ export const shadowStyle = (theme: Theme) => ({
   borderStyle: 'solid',
   boxShadow: `0px 10px 0px 0px ${theme.palette.primary.dark}`,
 });
+
+export const mainTransition = '.25s cubic-bezier(0.4, 0, 0.2, 1)';
