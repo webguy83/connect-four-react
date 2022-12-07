@@ -1,5 +1,4 @@
 import { Box, Theme } from '@mui/material';
-import { OpponentName } from '../../../utils/Types';
 import { scoreBoxContainerStyles } from './ScopeBox.styles';
 
 interface ScoreBoxProps {
@@ -55,7 +54,7 @@ export default function ScoreBox(props: ScoreBoxProps) {
       </Box>
 
       <p className='playerText'>{props.playerText}</p>
-      <p className='score'>35</p>
+      <p className='score'>0</p>
     </Box>
   );
 }

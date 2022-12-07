@@ -10,6 +10,8 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
     display: 'none',
     [theme.breakpoints.up('mdlg')]: {
       display: 'block',
+      minWidth: '14.1rem',
+      px: 0,
     },
   },
   '.game-board-header': {
@@ -24,14 +26,14 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   '.central-content': {
     mx: 'auto',
     overflow: 'hidden',
-    minWidth: '36rem',
+    minWidth: '35rem',
     [theme.breakpoints.up('mdlg')]: {
       mx: '5rem',
     },
   },
   '.horizontal-scores': {
     display: 'flex',
-    px: '3rem',
+    px: '2.5rem',
     my: '6rem',
     [theme.breakpoints.up('sm')]: {
       my: '1rem',
@@ -55,7 +57,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
 
   '.board': {
     position: 'relative',
-    width: 'clamp(36rem, 90vw, 63rem)',
+    width: 'clamp(35rem, 90vw, 63rem)',
     mt: '2.5rem',
     [theme.breakpoints.up('mdlg')]: {
       mt: '5rem',
