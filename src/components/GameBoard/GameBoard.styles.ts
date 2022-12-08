@@ -26,6 +26,8 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   '.central-content': {
     mx: 'auto',
     overflow: 'hidden',
+    pb: '1rem',
+    mt: '1rem',
     minWidth: '35rem',
     [theme.breakpoints.up('mdlg')]: {
       mx: '5rem',

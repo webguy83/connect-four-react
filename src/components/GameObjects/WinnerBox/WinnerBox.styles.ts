@@ -10,6 +10,7 @@ export const winnerBoxRootStyles: SxProps<Theme> = (theme) => ({
   textTransform: 'uppercase',
   fontWeight: 700,
   lineHeight: 1,
+  minWidth: '28.5rem',
 
   '.playerText': {
     my: 0,

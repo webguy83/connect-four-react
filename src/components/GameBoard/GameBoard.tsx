@@ -13,7 +13,6 @@ import { bottomBarStyles, gameBoardContainerStyles } from './GameBoard.styles';
 import Modal from '@mui/material/Modal';
 import PauseMenu from '../PauseMenu/PauseMenu';
 import { GameState, OpponentName, Player } from '../../utils/Types';
-import { mainColour } from '../../CustomTheme';
 import CPUIcon from '../Icons/CPUIcon';
 
 interface GameBoardProps {
@@ -72,10 +71,10 @@ export default function GameBoard(props: GameBoardProps) {
                 <ConnectFourGridBlack />
               </div>
               <div ref={blockRef} className='timer-container'>
-                {/* <WinnerBox /> */}
-                <Fade in={true}>
+                <WinnerBox currentPlayer={currentPlayer} opponentName={props.opponentName} />
+                {/* <Fade in={true}>
                   <TimerBox opponentName={props.opponentName} playerColour={currentPlayer === 'main' ? mainColour.main : mainColour.opponent} />
-                </Fade>
+                </Fade> */}
               </div>
             </div>
           </div>
