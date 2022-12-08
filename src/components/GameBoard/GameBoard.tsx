@@ -14,6 +14,7 @@ import Modal from '@mui/material/Modal';
 import PauseMenu from '../PauseMenu/PauseMenu';
 import { GameState, OpponentName, Player } from '../../utils/Types';
 import CPUIcon from '../Icons/CPUIcon';
+import { mainColour } from '../../CustomTheme';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -22,13 +23,57 @@ interface GameBoardProps {
 
 export default function GameBoard(props: GameBoardProps) {
   const blockRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<NodeJS.Timer | null>(null);
   const [lowerBarHeight, setLowerBarHeight] = useState<number>(0);
   const [openPauseMenu, setOpenPauseMenu] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState<Player>('main');
+  const [winner, setWinner] = useState<Player | null>(null);
+  const [seconds, setSeconds] = useState(30);
 
   const onWindowResize = useCallback(() => {
     addBarHeight();
   }, []);
+
+  const clearTimer = useCallback(() => {
+    setSeconds(30);
+
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    const id = setInterval(() => {
+      loop();
+    }, 1000);
+    timerRef.current = id;
+  }, []);
+
+  useEffect(() => {
+    clearTimer();
+  }, [clearTimer]);
+
+  function loop() {
+    setSeconds((prevSecs) => prevSecs - 1);
+  }
+
+  function onRestartGameClick() {
+    clearTimer();
+    setWinner(null);
+  }
+
+  const addWinner = useCallback(() => {
+    if (currentPlayer === 'main') {
+      setWinner('opponent');
+    } else {
+      setWinner('main');
+    }
+  }, [currentPlayer]);
+
+  useEffect(() => {
+    if (seconds <= 0 && timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+      addWinner();
+    }
+  }, [addWinner, seconds]);
 
   useEffect(() => {
     addBarHeight();
@@ -59,7 +104,7 @@ export default function GameBoard(props: GameBoardProps) {
             <header className='game-board-header'>
               <PillButton onClick={() => setOpenPauseMenu(true)}>Menu</PillButton>
               <Logo />
-              <PillButton>Restart</PillButton>
+              <PillButton onClick={onRestartGameClick}>Restart</PillButton>
             </header>
             <div className='horizontal-scores'>
               <ScoreBox Icon={<PlayerOne />} iconPlacement='left' playerText='Player 1' />
@@ -71,10 +116,17 @@ export default function GameBoard(props: GameBoardProps) {
                 <ConnectFourGridBlack />
               </div>
               <div ref={blockRef} className='timer-container'>
-                <WinnerBox currentPlayer={currentPlayer} opponentName={props.opponentName} />
-                {/* <Fade in={true}>
-                  <TimerBox opponentName={props.opponentName} playerColour={currentPlayer === 'main' ? mainColour.main : mainColour.opponent} />
-                </Fade> */}
+                {winner && (
+                  <Fade in={true}>
+                    <WinnerBox currentPlayer={winner} opponentName={props.opponentName} />
+                  </Fade>
+                )}
+
+                {!winner && (
+                  <Fade in={true}>
+                    <TimerBox timerSeconds={seconds} opponentName={props.opponentName} playerColour={mainColour[currentPlayer]} />
+                  </Fade>
+                )}
               </div>
             </div>
           </div>

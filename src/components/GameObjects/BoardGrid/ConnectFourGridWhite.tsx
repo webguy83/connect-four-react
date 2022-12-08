@@ -110,7 +110,7 @@ export default function ConnectFourGridWhite({ playerAccess }: ConnectFourGridPr
     const x = rect.x + 44;
     const y = rect.y + 44;
     showPlayerChips((oldValues) => {
-      return [...oldValues, <PlayerChip afterChipAnimated={chipFinishedAnimating} colour={playerAccess.currentPlayer === 'main' ? mainColour.main : mainColour.opponent} key={new Date().getTime()} x={x} y={y} container={ref.current} />];
+      return [...oldValues, <PlayerChip afterChipAnimated={chipFinishedAnimating} colour={mainColour[playerAccess.currentPlayer]} key={new Date().getTime()} x={x} y={y} container={ref.current} />];
     });
     setRectAreaData((oldData) => {
       const newRectAreaData = [...oldData];
@@ -145,7 +145,7 @@ export default function ConnectFourGridWhite({ playerAccess }: ConnectFourGridPr
           transition: `all ${mainTransition}`,
         })}
       >
-        <MarkerIcon colour={playerAccess.currentPlayer === 'main' ? mainColour.main : mainColour.opponent} />
+        <MarkerIcon colour={mainColour[playerAccess.currentPlayer]} />
       </Box>
 
       <svg ref={ref} className='white-grid' width='100%' height='100%' viewBox='0 0 632 584' xmlns='http://www.w3.org/2000/svg'>

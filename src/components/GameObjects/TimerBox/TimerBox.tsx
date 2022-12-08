@@ -9,6 +9,7 @@ import { timerBoxRootStyles } from './TimerBox.styles';
 interface TimerBoxProps {
   playerColour: string;
   opponentName: OpponentName;
+  timerSeconds: number;
 }
 
 export default forwardRef((props: TimerBoxProps, ref) => {
@@ -17,7 +18,7 @@ export default forwardRef((props: TimerBoxProps, ref) => {
     <Box ref={ref} style={{ color: props.playerColour }} sx={timerBoxRootStyles}>
       <div className='info' style={{ color: props.playerColour === mainColour.main ? mainColour.light : mainColour.dark, transition: `all ${mainTransition}` }}>
         <p className='playerText'>{name}'s Turn</p>
-        <p className='timer'>14s</p>
+        <p className='timer'>{props.timerSeconds}s</p>
       </div>
       <TimerIcon />
     </Box>
