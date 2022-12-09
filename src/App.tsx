@@ -4,6 +4,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
 import './App.css';
 import GameBoard from './components/GameBoard/GameBoard';
+import CPUIcon from './components/Icons/CPUIcon';
+import PlayerTwo from './components/Icons/PlayerTwo';
 import MainMenu from './components/MainMenu/MainMenu';
 import Rules from './components/Rules/Rules';
 import themeOptions from './CustomTheme';
@@ -20,7 +22,7 @@ function App() {
         <CssBaseline />
         {gameState === 'main-menu' && <MainMenu setOpponentName={setOpponentName} setGameState={setGameState} />}
         {gameState === 'rules' && <Rules setGameState={setGameState} />}
-        {gameState === 'game-board' && <GameBoard opponentName={opponentName} setGameState={setGameState} />}
+        {gameState === 'game-board' && <GameBoard opponentIcon={opponentName === 'Player 2' ? <PlayerTwo /> : <CPUIcon />} opponentName={opponentName} setGameState={setGameState} />}
       </ThemeProvider>
     </Box>
   );

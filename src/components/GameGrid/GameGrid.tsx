@@ -1,38 +1,39 @@
 import { Box, Slide } from '@mui/material';
 import { useRef, useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { mainColour } from '../../CustomTheme';
-import { mainTransition } from '../../utils/Styles';
 import { Player } from '../../utils/Types';
 import MarkerIcon from '../Icons/MarkerIcon';
 import PlayerChip from '../GameObjects/PlayerChip/PlayerChip';
 import ConnectFourGridWhite from '../GameObjects/BoardGrid/ConnectFourGridWhite';
-
-interface RectAreaData {
-  x: number;
-  y: number;
-  occupiedBy?: Player;
-  fullColumn?: boolean;
-}
+import { mainGridStyles } from './GameGrid.styles';
+import { RectAreaData } from '../../utils/Interfaces';
 
 interface ConnectFourGridProps {
   playerAccess: {
-    setCurrentPlayer: Dispatch<SetStateAction<Player>>;
     currentPlayer: Player;
+
+    playerChips: JSX.Element[];
+    rectAreaData: RectAreaData[];
   };
+  setCurrentPlayer: Dispatch<SetStateAction<Player>>;
+  setPlayerChips: Dispatch<SetStateAction<JSX.Element[]>>;
+  setRectAreaData: Dispatch<SetStateAction<RectAreaData[]>>;
 }
 
-export default function GameGrid({ playerAccess }: ConnectFourGridProps) {
+interface Coords {
+  x: number;
+  y: number;
+}
+
+export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlayer, setPlayerChips }: ConnectFourGridProps) {
   const containerRef = useRef(null);
   const disableUI = useRef<boolean>(false);
-  const [playerChips, showPlayerChips] = useState<JSX.Element[]>([]);
-  const [rectAreaData, setRectAreaData] = useState<RectAreaData[]>([]);
   const [markerPos, setMarkerPos] = useState<number>(-100000000);
-
   const COLUMNS = 7;
   const ROWS = 6;
 
   useEffect(() => {
-    const output = [];
+    const output: Coords[] = [];
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLUMNS; col++) {
         const x = 88 * col + 8;
@@ -42,30 +43,30 @@ export default function GameGrid({ playerAccess }: ConnectFourGridProps) {
     }
 
     setRectAreaData(output);
-  }, []);
+  }, [setRectAreaData]);
 
   function onMouseOverPiece(e: React.MouseEvent<SVGRectElement, MouseEvent>, index: number) {
     const elm = e.target as SVGRectElement;
-    const rectData = rectAreaData[index];
+    const rectData = playerAccess.rectAreaData[index];
     if (!rectData.fullColumn) {
       setMarkerPos(rectData.x + elm.width.baseVal.value / 2 - 19);
     }
   }
 
   function onMouseLeavePiece(index: number) {
-    const rectData = rectAreaData[index];
+    const rectData = playerAccess.rectAreaData[index];
     if (!rectData.fullColumn) {
       setMarkerPos(-100000000);
     }
   }
 
   const onRectClick = (index: number) => {
-    if (rectAreaData[index].fullColumn || disableUI.current) {
+    if (playerAccess.rectAreaData[index].fullColumn || disableUI.current) {
       return;
     }
     disableUI.current = true;
     const adjustedIndex = assignChipToLowestSlotPossibleIndex(index);
-    const rect = rectAreaData[adjustedIndex];
+    const rect = playerAccess.rectAreaData[adjustedIndex];
     addExtraDataToRect(rect, adjustedIndex);
   };
 
@@ -73,21 +74,21 @@ export default function GameGrid({ playerAccess }: ConnectFourGridProps) {
     if (rect) {
       occupyPlayer(rect, index);
       if (index < COLUMNS) {
-        addFullColumn(index - COLUMNS);
+        applyFullColumn(index - COLUMNS);
       }
     } else {
-      addFullColumn(index);
+      applyFullColumn(index);
     }
   }
 
   function assignChipToLowestSlotPossibleIndex(index: number) {
     let indexCounter = index;
-    if (rectAreaData[indexCounter]?.occupiedBy) {
-      while (indexCounter >= 0 && rectAreaData[indexCounter]?.occupiedBy) {
+    if (playerAccess.rectAreaData[indexCounter]?.occupiedBy) {
+      while (indexCounter >= 0 && playerAccess.rectAreaData[indexCounter]?.occupiedBy) {
         indexCounter -= COLUMNS;
       }
     } else {
-      while (indexCounter + COLUMNS < COLUMNS * ROWS && !rectAreaData[indexCounter + COLUMNS]?.occupiedBy) {
+      while (indexCounter + COLUMNS < COLUMNS * ROWS && !playerAccess.rectAreaData[indexCounter + COLUMNS]?.occupiedBy) {
         indexCounter += COLUMNS;
       }
     }
@@ -96,9 +97,9 @@ export default function GameGrid({ playerAccess }: ConnectFourGridProps) {
 
   function swapToNextPlayer() {
     if (playerAccess.currentPlayer === 'main') {
-      playerAccess.setCurrentPlayer('opponent');
+      setCurrentPlayer('opponent');
     } else {
-      playerAccess.setCurrentPlayer('main');
+      setCurrentPlayer('main');
     }
     disableUI.current = false;
   }
@@ -110,7 +111,7 @@ export default function GameGrid({ playerAccess }: ConnectFourGridProps) {
   function occupyPlayer(rect: RectAreaData, indexCounter: number) {
     const x = rect.x + 44;
     const y = rect.y + 44;
-    showPlayerChips((oldValues) => {
+    setPlayerChips((oldValues) => {
       return [
         ...oldValues,
         <Slide key={new Date().getTime()} onEntered={chipFinishedAnimating} in={true} timeout={500} container={containerRef.current}>
@@ -125,7 +126,7 @@ export default function GameGrid({ playerAccess }: ConnectFourGridProps) {
     });
   }
 
-  function addFullColumn(indexCounter: number) {
+  function applyFullColumn(indexCounter: number) {
     setMarkerPos(-100000000);
     setRectAreaData((oldData) => {
       const newRectAreaData = [...oldData];
@@ -140,24 +141,23 @@ export default function GameGrid({ playerAccess }: ConnectFourGridProps) {
   return (
     <>
       <Box
-        sx={(theme) => ({
-          display: 'none',
-          [theme.breakpoints.up('mdlg')]: {
-            display: disableUI.current ? 'none' : 'block',
-          },
-          position: 'absolute',
-          top: -37,
-          left: markerPos,
-          transition: `all ${mainTransition}`,
-        })}
+        sx={[
+          mainGridStyles,
+          (theme) => ({
+            [theme.breakpoints.up('mdlg')]: {
+              display: disableUI.current ? 'none' : 'block',
+            },
+            left: markerPos,
+          }),
+        ]}
       >
         <MarkerIcon colour={mainColour[playerAccess.currentPlayer]} />
       </Box>
 
       <svg ref={containerRef} className='white-grid' width='100%' height='100%' viewBox='0 0 632 584' xmlns='http://www.w3.org/2000/svg'>
-        {playerChips}
+        {playerAccess.playerChips}
         <ConnectFourGridWhite />
-        {rectAreaData.map((data, i) => {
+        {playerAccess.rectAreaData.map((data, i) => {
           return (
             <rect
               key={i}
