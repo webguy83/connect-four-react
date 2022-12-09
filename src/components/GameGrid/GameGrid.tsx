@@ -11,13 +11,14 @@ import { RectAreaData } from '../../utils/Interfaces';
 interface ConnectFourGridProps {
   playerAccess: {
     currentPlayer: Player;
-
     playerChips: JSX.Element[];
     rectAreaData: RectAreaData[];
   };
   setCurrentPlayer: Dispatch<SetStateAction<Player>>;
   setPlayerChips: Dispatch<SetStateAction<JSX.Element[]>>;
   setRectAreaData: Dispatch<SetStateAction<RectAreaData[]>>;
+  winner: Player | null;
+  clearTimer: () => void;
 }
 
 interface Coords {
@@ -25,12 +26,13 @@ interface Coords {
   y: number;
 }
 
-export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlayer, setPlayerChips }: ConnectFourGridProps) {
+export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlayer, setPlayerChips, winner, clearTimer }: ConnectFourGridProps) {
   const containerRef = useRef(null);
   const disableUI = useRef<boolean>(false);
   const [markerPos, setMarkerPos] = useState<number>(-100000000);
   const COLUMNS = 7;
   const ROWS = 6;
+  const noDataPresent = !playerAccess.rectAreaData.length;
 
   useEffect(() => {
     const output: Coords[] = [];
@@ -43,7 +45,7 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
     }
 
     setRectAreaData(output);
-  }, [setRectAreaData]);
+  }, [setRectAreaData, noDataPresent]);
 
   function onMouseOverPiece(e: React.MouseEvent<SVGRectElement, MouseEvent>, index: number) {
     const elm = e.target as SVGRectElement;
@@ -61,7 +63,7 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
   }
 
   const onRectClick = (index: number) => {
-    if (playerAccess.rectAreaData[index].fullColumn || disableUI.current) {
+    if (playerAccess.rectAreaData[index].fullColumn || disableUI.current || winner) {
       return;
     }
     disableUI.current = true;
@@ -102,6 +104,7 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
       setCurrentPlayer('main');
     }
     disableUI.current = false;
+    clearTimer();
   }
 
   function chipFinishedAnimating() {
@@ -145,7 +148,7 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
           mainGridStyles,
           (theme) => ({
             [theme.breakpoints.up('mdlg')]: {
-              display: disableUI.current ? 'none' : 'block',
+              display: disableUI.current || winner ? 'none' : 'block',
             },
             left: markerPos,
           }),
@@ -161,7 +164,7 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
           return (
             <rect
               key={i}
-              style={{ cursor: data.fullColumn || disableUI.current ? 'default' : 'pointer' }}
+              style={{ cursor: data.fullColumn || disableUI.current || winner ? 'default' : 'pointer' }}
               onClick={() => onRectClick(i)}
               onMouseOver={(e) => onMouseOverPiece(e, i)}
               onMouseLeave={() => onMouseLeavePiece(i)}

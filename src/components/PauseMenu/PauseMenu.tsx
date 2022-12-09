@@ -7,6 +7,7 @@ import { pauseMenuStyles } from './PauseMenu.styles';
 interface PauseMenuProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
   setOpenPauseMenu: Dispatch<SetStateAction<boolean>>;
+  onRestartGameClick: () => void;
 }
 
 export default forwardRef((props: PauseMenuProps, _) => {
@@ -17,7 +18,7 @@ export default forwardRef((props: PauseMenuProps, _) => {
         <RectangleButton className='continue-game-btn' variant='contained' onClick={() => props.setOpenPauseMenu(false)}>
           <Box component='span'>Continue Game</Box>
         </RectangleButton>
-        <RectangleButton className='restart-game-btn' variant='contained'>
+        <RectangleButton className='restart-game-btn' variant='contained' onClick={props.onRestartGameClick}>
           <Box component='span' className='text'>
             Restart
           </Box>

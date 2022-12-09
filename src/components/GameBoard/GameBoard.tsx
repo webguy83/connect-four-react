@@ -36,6 +36,8 @@ export default function GameBoard(props: GameBoardProps) {
   function onRestartGameClick() {
     clearTimer();
     setWinner(null);
+    setRectAreaData([]);
+    setPlayerChips([]);
   }
 
   const addWinner = useCallback(() => {
@@ -73,7 +75,7 @@ export default function GameBoard(props: GameBoardProps) {
             </div>
             <div className='board'>
               <div className='connectFour'>
-                <GameGrid playerAccess={{ currentPlayer, playerChips, rectAreaData }} setPlayerChips={setPlayerChips} setCurrentPlayer={setCurrentPlayer} setRectAreaData={setRectAreaData} />
+                <GameGrid playerAccess={{ currentPlayer, playerChips, rectAreaData }} clearTimer={clearTimer} winner={winner} setPlayerChips={setPlayerChips} setCurrentPlayer={setCurrentPlayer} setRectAreaData={setRectAreaData} />
                 <ConnectFourGridBlack />
               </div>
               <div ref={blockRef} className='timer-container'>
@@ -95,7 +97,7 @@ export default function GameBoard(props: GameBoardProps) {
         </Box>
         <Box sx={bottomBarStyles} height={lowerBarHeight}></Box>
         <Modal open={openPauseMenu} onClose={closeRules} aria-labelledby='rules-title' aria-describedby='rules-description'>
-          <PauseMenu setGameState={props.setGameState} setOpenPauseMenu={setOpenPauseMenu} />
+          <PauseMenu onRestartGameClick={onRestartGameClick} setGameState={props.setGameState} setOpenPauseMenu={setOpenPauseMenu} />
         </Modal>
       </Box>
     </Fade>
