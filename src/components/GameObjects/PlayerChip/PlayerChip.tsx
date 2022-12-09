@@ -1,21 +1,16 @@
-import { Slide } from '@mui/material';
+import { Box } from '@mui/material';
+import { forwardRef } from 'react';
 
 interface PlayerChipProps {
   x: number;
   y: number;
-  container: SVGElement | null;
   colour: string;
-  afterChipAnimated: () => void;
 }
 
-export default function PlayerChip(props: PlayerChipProps) {
+export default forwardRef((props: PlayerChipProps, ref) => {
   const now = new Date().getTime();
   const pathId = `path-${now}-player-chip`;
   const filterId = `filter-${now}-player-chip`;
-
-  function onSlideFinished() {
-    props.afterChipAnimated();
-  }
 
   return (
     <>
@@ -27,18 +22,16 @@ export default function PlayerChip(props: PlayerChipProps) {
           <feColorMatrix values='0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0' type='matrix' in='shadowInnerInner1'></feColorMatrix>
         </filter>
       </defs>
-      <Slide onEntered={onSlideFinished} in={true} timeout={500} container={props.container}>
-        <g stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+      <Box component='g' ref={ref} stroke='none' strokeWidth='1' fill='none' fillRule='evenodd'>
+        <g>
+          <circle fill='#000000' cx={props.x} cy={props.y} r='35'></circle>
+          <circle fill='#000000' cx={props.x} cy={props.y + 5} r='35'></circle>
           <g>
-            <circle fill='#000000' cx={props.x} cy={props.y} r='35'></circle>
-            <circle fill='#000000' cx={props.x} cy={props.y + 5} r='35'></circle>
-            <g>
-              <use fill={props.colour} fillRule='evenodd' xlinkHref={`#${pathId}`}></use>
-              <use fill='black' fillOpacity='1' filter={`url(#${filterId})`} xlinkHref={`#${pathId}`}></use>
-            </g>
+            <use fill={props.colour} fillRule='evenodd' xlinkHref={`#${pathId}`}></use>
+            <use fill='black' fillOpacity='1' filter={`url(#${filterId})`} xlinkHref={`#${pathId}`}></use>
           </g>
         </g>
-      </Slide>
+      </Box>
     </>
   );
-}
+});

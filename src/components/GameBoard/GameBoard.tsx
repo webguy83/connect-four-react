@@ -2,7 +2,7 @@ import { Box, Fade } from '@mui/material';
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import PillButton from '../Buttons/PillButton';
 import ConnectFourGridBlack from '../GameObjects/BoardGrid/ConnectFourGridBlack';
-import ConnectFourGridWhite from '../GameObjects/BoardGrid/ConnectFourGridWhite';
+import GameGrid from '../GameGrid/GameGrid';
 import ScoreBox from '../GameObjects/ScoreBox/ScoreBox';
 import TimerBox from '../GameObjects/TimerBox/TimerBox';
 import WinnerBox from '../GameObjects/WinnerBox/WinnerBox';
@@ -16,7 +16,7 @@ import { GameState, OpponentName, Player } from '../../utils/Types';
 import CPUIcon from '../Icons/CPUIcon';
 import { mainColour } from '../../CustomTheme';
 import { useTimer } from './hooks/useTimer';
-import { useWindowResize } from './hooks/useWindowResize';
+import { useLowerBarHeight } from './hooks/useLowerBarHeight';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -29,7 +29,7 @@ export default function GameBoard(props: GameBoardProps) {
   const [currentPlayer, setCurrentPlayer] = useState<Player>('main');
   const [winner, setWinner] = useState<Player | null>(null);
   const { seconds, clearTimer } = useTimer();
-  const { lowerBarHeight } = useWindowResize(blockRef.current);
+  const { lowerBarHeight } = useLowerBarHeight(blockRef.current);
 
   function onRestartGameClick() {
     clearTimer();
@@ -71,7 +71,7 @@ export default function GameBoard(props: GameBoardProps) {
             </div>
             <div className='board'>
               <div className='connectFour'>
-                <ConnectFourGridWhite playerAccess={{ setCurrentPlayer, currentPlayer }} />
+                <GameGrid playerAccess={{ setCurrentPlayer, currentPlayer }} />
                 <ConnectFourGridBlack />
               </div>
               <div ref={blockRef} className='timer-container'>

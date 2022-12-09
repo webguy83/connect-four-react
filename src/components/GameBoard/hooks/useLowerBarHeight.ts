@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export function useWindowResize(elm: HTMLDivElement | null) {
+export function useLowerBarHeight(elm: HTMLDivElement | null) {
   const [lowerBarHeight, setLowerBarHeight] = useState<number>(0);
 
   const addBarHeight = useCallback(() => {
