@@ -15,6 +15,8 @@ import PauseMenu from '../PauseMenu/PauseMenu';
 import { GameState, OpponentName, Player } from '../../utils/Types';
 import CPUIcon from '../Icons/CPUIcon';
 import { mainColour } from '../../CustomTheme';
+import { useTimer } from './hooks/useTimer';
+import { useWindowResize } from './hooks/useWindowResize';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -23,36 +25,11 @@ interface GameBoardProps {
 
 export default function GameBoard(props: GameBoardProps) {
   const blockRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<NodeJS.Timer | null>(null);
-  const [lowerBarHeight, setLowerBarHeight] = useState<number>(0);
   const [openPauseMenu, setOpenPauseMenu] = useState(false);
   const [currentPlayer, setCurrentPlayer] = useState<Player>('main');
   const [winner, setWinner] = useState<Player | null>(null);
-  const [seconds, setSeconds] = useState(30);
-
-  const onWindowResize = useCallback(() => {
-    addBarHeight();
-  }, []);
-
-  const clearTimer = useCallback(() => {
-    setSeconds(30);
-
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    const id = setInterval(() => {
-      loop();
-    }, 1000);
-    timerRef.current = id;
-  }, []);
-
-  useEffect(() => {
-    clearTimer();
-  }, [clearTimer]);
-
-  function loop() {
-    setSeconds((prevSecs) => prevSecs - 1);
-  }
+  const { seconds, clearTimer } = useTimer();
+  const { lowerBarHeight } = useWindowResize(blockRef.current);
 
   function onRestartGameClick() {
     clearTimer();
@@ -68,28 +45,10 @@ export default function GameBoard(props: GameBoardProps) {
   }, [currentPlayer]);
 
   useEffect(() => {
-    if (seconds <= 0 && timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
+    if (seconds <= 0) {
       addWinner();
     }
   }, [addWinner, seconds]);
-
-  useEffect(() => {
-    addBarHeight();
-    window.addEventListener('resize', onWindowResize);
-
-    return function () {
-      window.removeEventListener('resize', onWindowResize);
-    };
-  }, [onWindowResize]);
-
-  function addBarHeight() {
-    if (blockRef.current) {
-      const height = document.body.clientHeight - blockRef.current.getBoundingClientRect().y - window.scrollY;
-      setLowerBarHeight(height);
-    }
-  }
 
   function closeRules() {
     setOpenPauseMenu(false);
