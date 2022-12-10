@@ -6,6 +6,7 @@ interface ScoreBoxProps {
   playerText: string;
   iconPlacement?: 'right' | 'left';
   reverseText?: boolean;
+  score: number;
 }
 
 export default function ScoreBox(props: ScoreBoxProps) {
@@ -54,7 +55,7 @@ export default function ScoreBox(props: ScoreBoxProps) {
       </Box>
 
       <p className='playerText'>{props.playerText}</p>
-      <p className='score'>0</p>
+      <p className='score'>{props.score}</p>
     </Box>
   );
 }

@@ -6,7 +6,7 @@ export const winnerBoxRootStyles: SxProps<Theme> = (theme) => ({
   backgroundColor: theme.palette.secondary.light,
   color: theme.palette.primary.dark,
   textAlign: 'center',
-  py: '1.5rem',
+  py: '1.85rem',
   textTransform: 'uppercase',
   fontWeight: 700,
   lineHeight: 1,

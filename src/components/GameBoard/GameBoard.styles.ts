@@ -97,12 +97,11 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
   },
 });
 
-export const bottomBarStyles: SxProps<Theme> = (theme) => ({
+export const bottomBarStyles = {
   width: '100%',
-  backgroundColor: theme.palette.primary.main,
   position: 'absolute',
   bottom: 0,
   borderTopLeftRadius: '6rem',
   borderTopRightRadius: '6rem',
   zIndex: 0,
-});
+};

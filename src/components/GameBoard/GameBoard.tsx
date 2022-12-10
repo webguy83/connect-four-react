@@ -1,4 +1,4 @@
-import { Box, Fade } from '@mui/material';
+import { Box, Fade, Theme } from '@mui/material';
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import PillButton from '../Buttons/PillButton';
 import ConnectFourGridBlack from '../GameObjects/BoardGrid/ConnectFourGridBlack';
@@ -16,6 +16,7 @@ import { mainColour } from '../../CustomTheme';
 import { useTimer } from './hooks/useTimer';
 import { useLowerBarHeight } from './hooks/useLowerBarHeight';
 import { RectAreaData } from '../../utils/Interfaces';
+import { mainTransition } from '../../utils/Styles';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -30,74 +31,118 @@ export default function GameBoard(props: GameBoardProps) {
   const [playerChips, setPlayerChips] = useState<JSX.Element[]>([]);
   const [rectAreaData, setRectAreaData] = useState<RectAreaData[]>([]);
   const [winner, setWinner] = useState<Player | null>(null);
-  const { seconds, clearTimer } = useTimer();
+  const { timerSeconds, clearTimer, pauseResumeTimer } = useTimer();
   const { lowerBarHeight } = useLowerBarHeight(blockRef.current);
+  const [disableUI, setDisableUI] = useState(false);
+  const [mainPlayerScore, setMainPlayerScore] = useState<number>(0);
+  const [opponentScore, setOpponentScore] = useState<number>(0);
 
   function onRestartGameClick() {
+    setMainPlayerScore(0);
+    setOpponentScore(0);
+    resetOthers();
+  }
+
+  function onPlayAgainClick() {
+    resetOthers();
+  }
+
+  function resetOthers() {
     clearTimer();
+    setOpenPauseMenu(false);
     setWinner(null);
     setRectAreaData([]);
     setPlayerChips([]);
+    setDisableUI(false);
   }
 
   const addWinner = useCallback(() => {
     if (currentPlayer === 'main') {
       setWinner('opponent');
+      setOpponentScore((prevScore) => prevScore + 1);
     } else {
       setWinner('main');
+      setMainPlayerScore((prevScore) => prevScore + 1);
     }
   }, [currentPlayer]);
 
   useEffect(() => {
-    if (seconds <= 0) {
+    if (timerSeconds <= 0) {
       addWinner();
     }
-  }, [addWinner, seconds]);
+  }, [addWinner, timerSeconds]);
 
-  function closeRules() {
+  function closeMenu() {
     setOpenPauseMenu(false);
+    pauseResumeTimer();
+  }
+
+  function openMenu() {
+    setOpenPauseMenu(true);
+    pauseResumeTimer();
   }
 
   return (
     <Fade in={true}>
       <Box width='100%'>
         <Box sx={gameBoardContainerStyles}>
-          <ScoreBox Icon={<PlayerOne />} playerText='Player 1' />
+          <ScoreBox score={mainPlayerScore} Icon={<PlayerOne />} playerText='Player 1' />
           <div className='central-content'>
             <header className='game-board-header'>
-              <PillButton onClick={() => setOpenPauseMenu(true)}>Menu</PillButton>
+              <PillButton onClick={openMenu}>Menu</PillButton>
               <Logo />
               <PillButton onClick={onRestartGameClick}>Restart</PillButton>
             </header>
             <div className='horizontal-scores'>
-              <ScoreBox Icon={<PlayerOne />} iconPlacement='left' playerText='Player 1' />
-              <ScoreBox Icon={props.opponentIcon} iconPlacement='right' playerText={props.opponentName} reverseText />
+              <ScoreBox score={mainPlayerScore} Icon={<PlayerOne />} iconPlacement='left' playerText='Player 1' />
+              <ScoreBox score={opponentScore} Icon={props.opponentIcon} iconPlacement='right' playerText={props.opponentName} reverseText />
             </div>
             <div className='board'>
               <div className='connectFour'>
-                <GameGrid playerAccess={{ currentPlayer, playerChips, rectAreaData }} clearTimer={clearTimer} winner={winner} setPlayerChips={setPlayerChips} setCurrentPlayer={setCurrentPlayer} setRectAreaData={setRectAreaData} />
+                <GameGrid
+                  playerAccess={{ currentPlayer, playerChips, rectAreaData }}
+                  pauseResumeTimer={pauseResumeTimer}
+                  clearTimer={clearTimer}
+                  setWinner={setWinner}
+                  setDisableUI={setDisableUI}
+                  disableUI={disableUI}
+                  winner={winner}
+                  setPlayerChips={setPlayerChips}
+                  setCurrentPlayer={setCurrentPlayer}
+                  setRectAreaData={setRectAreaData}
+                  timerSeconds={timerSeconds}
+                />
                 <ConnectFourGridBlack />
               </div>
               <div ref={blockRef} className='timer-container'>
                 {winner && (
                   <Fade in={true}>
-                    <WinnerBox onPlayAgainClick={onRestartGameClick} currentPlayer={winner} opponentName={props.opponentName} />
+                    <WinnerBox onPlayAgainClick={onPlayAgainClick} currentPlayer={winner} opponentName={props.opponentName} />
                   </Fade>
                 )}
 
                 {!winner && (
                   <Fade in={true}>
-                    <TimerBox timerSeconds={seconds} opponentName={props.opponentName} playerColour={mainColour[currentPlayer]} />
+                    <TimerBox timerSeconds={timerSeconds} opponentName={props.opponentName} playerColour={mainColour[currentPlayer]} />
                   </Fade>
                 )}
               </div>
             </div>
           </div>
-          <ScoreBox Icon={props.opponentIcon} playerText={props.opponentName} />
+          <ScoreBox score={opponentScore} Icon={props.opponentIcon} playerText={props.opponentName} />
         </Box>
-        <Box sx={bottomBarStyles} height={lowerBarHeight}></Box>
-        <Modal open={openPauseMenu} onClose={closeRules} aria-labelledby='rules-title' aria-describedby='rules-description'>
-          <PauseMenu onRestartGameClick={onRestartGameClick} setGameState={props.setGameState} setOpenPauseMenu={setOpenPauseMenu} />
+        <Box
+          sx={[
+            bottomBarStyles,
+            (theme: Theme) => ({
+              backgroundColor: winner ? mainColour[winner] : theme.palette.primary.main,
+              transition: `background-color ${mainTransition}`,
+            }),
+          ]}
+          height={lowerBarHeight}
+        ></Box>
+        <Modal open={openPauseMenu} onClose={closeMenu} aria-labelledby='rules-title' aria-describedby='rules-description'>
+          <PauseMenu onRestartGameClick={onRestartGameClick} setGameState={props.setGameState} closeMenu={closeMenu} />
         </Modal>
       </Box>
     </Fade>

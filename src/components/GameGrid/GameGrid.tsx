@@ -18,7 +18,12 @@ interface ConnectFourGridProps {
   setPlayerChips: Dispatch<SetStateAction<JSX.Element[]>>;
   setRectAreaData: Dispatch<SetStateAction<RectAreaData[]>>;
   winner: Player | null;
+  setWinner: Dispatch<SetStateAction<Player | null>>;
   clearTimer: () => void;
+  pauseResumeTimer: () => void;
+  timerSeconds: number;
+  setDisableUI: Dispatch<SetStateAction<boolean>>;
+  disableUI: boolean;
 }
 
 interface Coords {
@@ -26,9 +31,8 @@ interface Coords {
   y: number;
 }
 
-export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlayer, setPlayerChips, winner, clearTimer }: ConnectFourGridProps) {
+export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlayer, setPlayerChips, winner, clearTimer, pauseResumeTimer, timerSeconds, setWinner, setDisableUI, disableUI }: ConnectFourGridProps) {
   const containerRef = useRef(null);
-  const disableUI = useRef<boolean>(false);
   const [markerPos, setMarkerPos] = useState<number>(-100000000);
   const COLUMNS = 7;
   const ROWS = 6;
@@ -63,13 +67,16 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
   }
 
   const onRectClick = (index: number) => {
-    if (playerAccess.rectAreaData[index].fullColumn || disableUI.current || winner) {
+    if (playerAccess.rectAreaData[index].fullColumn || disableUI || winner) {
       return;
     }
-    disableUI.current = true;
-    const adjustedIndex = assignChipToLowestSlotPossibleIndex(index);
-    const rect = playerAccess.rectAreaData[adjustedIndex];
-    addExtraDataToRect(rect, adjustedIndex);
+    setDisableUI(true);
+    pauseResumeTimer();
+    if (timerSeconds >= 0) {
+      const adjustedIndex = assignChipToLowestSlotPossibleIndex(index);
+      const rect = playerAccess.rectAreaData[adjustedIndex];
+      addExtraDataToRect(rect, adjustedIndex);
+    }
   };
 
   function addExtraDataToRect(rect: RectAreaData, index: number) {
@@ -103,7 +110,7 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
     } else {
       setCurrentPlayer('main');
     }
-    disableUI.current = false;
+    setDisableUI(false);
     clearTimer();
   }
 
@@ -117,7 +124,7 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
     setPlayerChips((oldValues) => {
       return [
         ...oldValues,
-        <Slide key={new Date().getTime()} onEntered={chipFinishedAnimating} in={true} timeout={500} container={containerRef.current}>
+        <Slide key={new Date().getTime()} onEntered={chipFinishedAnimating} in={timerSeconds > 0} timeout={500} container={containerRef.current}>
           <PlayerChip colour={mainColour[playerAccess.currentPlayer]} x={x} y={y} />
         </Slide>,
       ];
@@ -148,7 +155,7 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
           mainGridStyles,
           (theme) => ({
             [theme.breakpoints.up('mdlg')]: {
-              display: disableUI.current || winner ? 'none' : 'block',
+              display: disableUI || winner ? 'none' : 'block',
             },
             left: markerPos,
           }),
@@ -164,7 +171,7 @@ export default function GameGrid({ playerAccess, setRectAreaData, setCurrentPlay
           return (
             <rect
               key={i}
-              style={{ cursor: data.fullColumn || disableUI.current || winner ? 'default' : 'pointer' }}
+              style={{ cursor: data.fullColumn || disableUI || winner ? 'default' : 'pointer' }}
               onClick={() => onRectClick(i)}
               onMouseOver={(e) => onMouseOverPiece(e, i)}
               onMouseLeave={() => onMouseLeavePiece(i)}
