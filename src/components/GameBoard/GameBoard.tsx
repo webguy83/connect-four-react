@@ -36,6 +36,7 @@ export default function GameBoard(props: GameBoardProps) {
   const [disableUI, setDisableUI] = useState(false);
   const [mainPlayerScore, setMainPlayerScore] = useState<number>(0);
   const [opponentScore, setOpponentScore] = useState<number>(0);
+  const [tieGame, setTieGame] = useState(false);
 
   function onRestartGameClick() {
     setMainPlayerScore(0);
@@ -54,6 +55,7 @@ export default function GameBoard(props: GameBoardProps) {
     setRectAreaData([]);
     setPlayerChips([]);
     setDisableUI(false);
+    setTieGame(false);
   }
 
   const addWinner = useCallback(() => {
@@ -100,7 +102,9 @@ export default function GameBoard(props: GameBoardProps) {
             <div className='board'>
               <div className='connectFour'>
                 <GameGrid
-                  playerAccess={{ currentPlayer, playerChips, rectAreaData }}
+                  currentPlayer={currentPlayer}
+                  playerChips={playerChips}
+                  rectAreaData={rectAreaData}
                   pauseResumeTimer={pauseResumeTimer}
                   clearTimer={clearTimer}
                   setWinner={setWinner}
@@ -111,17 +115,20 @@ export default function GameBoard(props: GameBoardProps) {
                   setCurrentPlayer={setCurrentPlayer}
                   setRectAreaData={setRectAreaData}
                   timerSeconds={timerSeconds}
+                  setOpponentScore={setOpponentScore}
+                  setMainPlayerScore={setMainPlayerScore}
+                  setTieGame={setTieGame}
                 />
                 <ConnectFourGridBlack />
               </div>
               <div ref={blockRef} className='timer-container'>
-                {winner && (
+                {(winner || tieGame) && (
                   <Fade in={true}>
-                    <WinnerBox onPlayAgainClick={onPlayAgainClick} currentPlayer={winner} opponentName={props.opponentName} />
+                    <WinnerBox tieGame={tieGame} onPlayAgainClick={onPlayAgainClick} currentPlayer={winner} opponentName={props.opponentName} />
                   </Fade>
                 )}
 
-                {!winner && (
+                {!winner && !tieGame && (
                   <Fade in={true}>
                     <TimerBox timerSeconds={timerSeconds} opponentName={props.opponentName} playerColour={mainColour[currentPlayer]} />
                   </Fade>
