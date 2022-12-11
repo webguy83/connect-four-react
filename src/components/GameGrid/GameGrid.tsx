@@ -54,11 +54,12 @@ export default function GameGrid(props: ConnectFourGridProps) {
     setRectAreaData(output);
   }, [setRectAreaData, noDataPresent]);
 
-  function onMouseOverPiece(e: React.MouseEvent<SVGRectElement, MouseEvent>, index: number) {
-    const elm = e.target as SVGRectElement;
-    const rectData = props.rectAreaData[index];
-    if (!rectData.fullColumn) {
-      setMarkerPos(rectData.x + elm.width.baseVal.value / 2 - 19);
+  function onMouseOverPiece(index: number) {
+    if (!props.winner) {
+      const rectData = props.rectAreaData[index];
+      if (!rectData.fullColumn) {
+        setMarkerPos(rectData.x + 24.86);
+      }
     }
   }
 
@@ -228,13 +229,18 @@ export default function GameGrid(props: ConnectFourGridProps) {
                   <Box component='circle' cx={data.x + 44} cy={data.y + 46} r='14' stroke='white' strokeWidth='6' fill={mainColour[props.currentPlayer]}></Box>
                 </Fade>
               )}
-              <rect
-                style={{ cursor: data.fullColumn || props.disableUI || props.winner ? 'default' : 'pointer' }}
+              <Box
+                component='rect'
+                sx={{
+                  '@media (hover: hover) and (pointer: fine)': {
+                    cursor: data.fullColumn || props.disableUI || props.winner ? 'default' : 'pointer',
+                  },
+                }}
                 onClick={() => onRectClick(i)}
-                onMouseOver={(e) => onMouseOverPiece(e, i)}
+                onMouseOver={() => onMouseOverPiece(i)}
                 onMouseLeave={() => onMouseLeavePiece(i)}
-                width='88'
-                height='88'
+                width='88px'
+                height='88px'
                 x={data.x}
                 y={data.y}
                 opacity='0'

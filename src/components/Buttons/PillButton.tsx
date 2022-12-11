@@ -7,6 +7,11 @@ export default styled(Button)(({ theme }) => ({
   color: theme.palette.secondary.light,
   backgroundColor: theme.palette.primary.main,
   '&:hover': {
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: theme.palette.primary.main,
+  },
+  '@media (hover: hover) and (pointer: fine)': {
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.dark,
+    },
   },
 }));
