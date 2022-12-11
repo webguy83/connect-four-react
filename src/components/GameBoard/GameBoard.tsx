@@ -27,7 +27,8 @@ interface GameBoardProps {
 export default function GameBoard(props: GameBoardProps) {
   const blockRef = useRef<HTMLDivElement>(null);
   const [openPauseMenu, setOpenPauseMenu] = useState(false);
-  const [currentPlayer, setCurrentPlayer] = useState<Player>('main');
+  const [startingPlayer, setStartingPlayer] = useState<Player>('main');
+  const [currentPlayer, setCurrentPlayer] = useState<Player>(startingPlayer);
   const [playerChips, setPlayerChips] = useState<JSX.Element[]>([]);
   const [rectAreaData, setRectAreaData] = useState<RectAreaData[]>([]);
   const [winner, setWinner] = useState<Player | null>(null);
@@ -41,10 +42,17 @@ export default function GameBoard(props: GameBoardProps) {
   function onRestartGameClick() {
     setMainPlayerScore(0);
     setOpponentScore(0);
+    setStartingPlayer('main');
+    setCurrentPlayer('main');
     resetOthers();
   }
 
   function onPlayAgainClick() {
+    setStartingPlayer((prevStartingPlayer) => {
+      const startingPlayer = prevStartingPlayer === 'main' ? 'opponent' : 'main';
+      setCurrentPlayer(startingPlayer);
+      return startingPlayer;
+    });
     resetOthers();
   }
 

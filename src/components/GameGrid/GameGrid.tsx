@@ -136,29 +136,15 @@ export default function GameGrid(props: ConnectFourGridProps) {
           props.setWinner(props.currentPlayer);
         } else if (checkHorizonal(currentRectArea)) {
           props.setWinner(props.currentPlayer);
+        } else if (checkDiagonalLeft(currentRectArea)) {
+          props.setWinner(props.currentPlayer);
+        } else if (checkDiagonalRight(currentRectArea)) {
+          props.setWinner(props.currentPlayer);
         } else {
           swapToNextPlayer();
         }
       }
     }
-  }
-
-  function checkHorizonal(currentRectArea: RectAreaData) {
-    const winningRectAreas: RectAreaData[] = [];
-    if (currentRectArea.occupiedBy) {
-      let currentSelectedRectArea = { ...currentRectArea };
-      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
-        winningRectAreas.push(currentSelectedRectArea);
-        currentSelectedRectArea = props.rectAreaData[currentSelectedRectArea.occupiedBy.index - 1];
-      }
-
-      currentSelectedRectArea = props.rectAreaData[currentRectArea.occupiedBy.index + 1];
-      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
-        winningRectAreas.push(currentSelectedRectArea);
-        currentSelectedRectArea = props.rectAreaData[currentSelectedRectArea.occupiedBy.index + 1];
-      }
-    }
-    return processForWinnersOrSwap(winningRectAreas);
   }
 
   function checkVertical(currentRectArea: RectAreaData) {
@@ -168,6 +154,80 @@ export default function GameGrid(props: ConnectFourGridProps) {
       while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
         winningRectAreas.push(currentSelectedRectArea);
         currentSelectedRectArea = props.rectAreaData[currentSelectedRectArea.occupiedBy.index + COLUMNS];
+      }
+    }
+    return processForWinnersOrSwap(winningRectAreas);
+  }
+
+  function checkHorizonal(currentRectArea: RectAreaData) {
+    const winningRectAreas: RectAreaData[] = [];
+    if (currentRectArea.occupiedBy) {
+      let currentSelectedRectArea = { ...currentRectArea };
+      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player && currentRectArea.y === currentSelectedRectArea.y) {
+        winningRectAreas.push(currentSelectedRectArea);
+        currentSelectedRectArea = props.rectAreaData[currentSelectedRectArea.occupiedBy.index - 1];
+      }
+
+      currentSelectedRectArea = props.rectAreaData[currentRectArea.occupiedBy.index + 1];
+      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player && currentRectArea.y === currentSelectedRectArea.y) {
+        winningRectAreas.push(currentSelectedRectArea);
+        currentSelectedRectArea = props.rectAreaData[currentSelectedRectArea.occupiedBy.index + 1];
+      }
+    }
+    return processForWinnersOrSwap(winningRectAreas);
+  }
+
+  function checkDiagonalBoundariesAndGetRect(rect1: RectAreaData, rect2: RectAreaData) {
+    if (rect1 && rect2 && rect1.y === rect2.y) {
+      return rect2;
+    } else {
+      return { ...rect2, occupiedBy: undefined };
+    }
+  }
+
+  function checkDiagonalLeft(currentRectArea: RectAreaData) {
+    const winningRectAreas: RectAreaData[] = [];
+    if (currentRectArea.occupiedBy) {
+      let currentSelectedRectArea = { ...currentRectArea };
+      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
+        winningRectAreas.push(currentSelectedRectArea);
+        const rectArea1 = props.rectAreaData[currentSelectedRectArea.occupiedBy.index - COLUMNS];
+        const rectArea2 = props.rectAreaData[currentSelectedRectArea.occupiedBy.index - COLUMNS - 1];
+        currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
+      }
+
+      const rectArea1 = props.rectAreaData[currentRectArea.occupiedBy.index + COLUMNS];
+      const rectArea2 = props.rectAreaData[currentRectArea.occupiedBy.index + COLUMNS + 1];
+      currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
+      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
+        winningRectAreas.push(currentSelectedRectArea);
+        const rectArea1 = props.rectAreaData[currentSelectedRectArea.occupiedBy.index + COLUMNS];
+        const rectArea2 = props.rectAreaData[currentSelectedRectArea.occupiedBy.index + COLUMNS + 1];
+        currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
+      }
+    }
+    return processForWinnersOrSwap(winningRectAreas);
+  }
+
+  function checkDiagonalRight(currentRectArea: RectAreaData) {
+    const winningRectAreas: RectAreaData[] = [];
+    if (currentRectArea.occupiedBy) {
+      let currentSelectedRectArea = { ...currentRectArea };
+      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
+        winningRectAreas.push(currentSelectedRectArea);
+        const rectArea1 = props.rectAreaData[currentSelectedRectArea.occupiedBy.index + COLUMNS];
+        const rectArea2 = props.rectAreaData[currentSelectedRectArea.occupiedBy.index + COLUMNS - 1];
+        currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
+      }
+
+      const rectArea1 = props.rectAreaData[currentRectArea.occupiedBy.index - COLUMNS];
+      const rectArea2 = props.rectAreaData[currentRectArea.occupiedBy.index - COLUMNS + 1];
+      currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
+      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
+        winningRectAreas.push(currentSelectedRectArea);
+        const rectArea1 = props.rectAreaData[currentSelectedRectArea.occupiedBy.index - COLUMNS];
+        const rectArea2 = props.rectAreaData[currentSelectedRectArea.occupiedBy.index - COLUMNS + 1];
+        currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
       }
     }
     return processForWinnersOrSwap(winningRectAreas);
