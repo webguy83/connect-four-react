@@ -132,21 +132,45 @@ export default function GameGrid(props: ConnectFourGridProps) {
     if (!isTieGame()) {
       const currentRectArea = selectedRectAreaRef.current;
       if (currentRectArea) {
-        checkVertical(currentRectArea);
+        if (checkVertical(currentRectArea)) {
+          props.setWinner(props.currentPlayer);
+        } else if (checkHorizonal(currentRectArea)) {
+          props.setWinner(props.currentPlayer);
+        } else {
+          swapToNextPlayer();
+        }
       }
     }
   }
 
-  function checkVertical(currentRectArea: RectAreaData) {
+  function checkHorizonal(currentRectArea: RectAreaData) {
+    const winningRectAreas: RectAreaData[] = [];
     if (currentRectArea.occupiedBy) {
       let currentSelectedRectArea = { ...currentRectArea };
-      const winningRectAreas: RectAreaData[] = [];
+      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
+        winningRectAreas.push(currentSelectedRectArea);
+        currentSelectedRectArea = props.rectAreaData[currentSelectedRectArea.occupiedBy.index - 1];
+      }
+
+      currentSelectedRectArea = props.rectAreaData[currentRectArea.occupiedBy.index + 1];
+      while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
+        winningRectAreas.push(currentSelectedRectArea);
+        currentSelectedRectArea = props.rectAreaData[currentSelectedRectArea.occupiedBy.index + 1];
+      }
+    }
+    return processForWinnersOrSwap(winningRectAreas);
+  }
+
+  function checkVertical(currentRectArea: RectAreaData) {
+    const winningRectAreas: RectAreaData[] = [];
+    if (currentRectArea.occupiedBy) {
+      let currentSelectedRectArea = { ...currentRectArea };
       while (currentSelectedRectArea && currentRectArea.occupiedBy.player === currentSelectedRectArea.occupiedBy?.player) {
         winningRectAreas.push(currentSelectedRectArea);
         currentSelectedRectArea = props.rectAreaData[currentSelectedRectArea.occupiedBy.index + COLUMNS];
       }
-      processForWinnersOrSwap(winningRectAreas);
     }
+    return processForWinnersOrSwap(winningRectAreas);
   }
 
   function processForWinnersOrSwap(winningRectAreas: RectAreaData[]) {
@@ -160,15 +184,13 @@ export default function GameGrid(props: ConnectFourGridProps) {
         return rectArea;
       });
       props.setRectAreaData(updatedRects);
-      props.setWinner(props.currentPlayer);
       if (props.currentPlayer === 'main') {
         props.setMainPlayerScore((prevScore) => prevScore + 1);
       } else {
         props.setOpponentScore((prevScore) => prevScore + 1);
       }
-    } else {
-      swapToNextPlayer();
     }
+    return winningRectAreas.length >= 4;
   }
 
   function occupyPlayer(rect: RectAreaData, indexCounter: number) {
