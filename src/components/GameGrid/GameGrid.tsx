@@ -236,7 +236,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
   function processForWinnersOrSwap(winningRectAreas: RectAreaData[]) {
     if (winningRectAreas.length >= 4) {
       const updatedRects = props.rectAreaData.map((rectArea, i) => {
-        const winnerRect = winningRectAreas.find((winningRect) => winningRect.occupiedBy?.index === i);
+        const winnerRect: RectAreaData | undefined = winningRectAreas.find((winningRect) => winningRect.occupiedBy?.index === i);
         if (winnerRect) {
           winnerRect.winningArea = true;
           return winnerRect;
@@ -301,35 +301,46 @@ export default function GameGrid(props: ConnectFourGridProps) {
       </Box>
 
       <svg ref={containerRef} className='white-grid' width='100%' height='100%' viewBox='0 0 632 584' xmlns='http://www.w3.org/2000/svg'>
-        {props.playerChips}
-        <ConnectFourGridWhite />
-        {props.rectAreaData.map((data, i) => {
-          return (
-            <g key={i}>
-              {data.winningArea && (
-                <Fade in={true}>
-                  <Box component='circle' cx={data.x + 44} cy={data.y + 46} r='14' stroke='white' strokeWidth='6' fill={mainColour[props.currentPlayer]}></Box>
-                </Fade>
-              )}
-              <Box
-                component='rect'
-                sx={{
-                  '@media (hover: hover) and (pointer: fine)': {
-                    cursor: data.fullColumn || props.disableUI || props.winner ? 'default' : 'pointer',
-                  },
-                }}
-                onClick={() => onRectClick(i)}
-                onMouseOver={() => onMouseOverPiece(i)}
-                onMouseLeave={() => onMouseLeavePiece(i)}
-                width='88px'
-                height='88px'
-                x={data.x}
-                y={data.y}
-                opacity='0'
-              />
-            </g>
-          );
-        })}
+        <defs>
+          <rect id='rect' width='100%' height='100%' fill='none' rx='40' ry='40' stroke='black' />
+          <clipPath id='clip'>
+            <use xlinkHref='#rect' />
+          </clipPath>
+        </defs>
+        <use xlinkHref='#rect' />
+        <g clip-path='url(#clip)'>
+          {props.playerChips}
+
+          <ConnectFourGridWhite />
+
+          {props.rectAreaData.map((data, i) => {
+            return (
+              <g key={i}>
+                {data.winningArea && (
+                  <Fade in={true}>
+                    <Box component='circle' cx={data.x + 44} cy={data.y + 46} r='14' stroke='white' strokeWidth='6' fill={mainColour[props.currentPlayer]}></Box>
+                  </Fade>
+                )}
+                <Box
+                  component='rect'
+                  sx={{
+                    '@media (hover: hover) and (pointer: fine)': {
+                      cursor: data.fullColumn || props.disableUI || props.winner ? 'default' : 'pointer',
+                    },
+                  }}
+                  onClick={() => onRectClick(i)}
+                  onMouseOver={() => onMouseOverPiece(i)}
+                  onMouseLeave={() => onMouseLeavePiece(i)}
+                  width='88px'
+                  height='88px'
+                  x={data.x}
+                  y={data.y}
+                  opacity='0'
+                />
+              </g>
+            );
+          })}
+        </g>
       </svg>
     </>
   );
