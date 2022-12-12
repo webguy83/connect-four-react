@@ -15,7 +15,7 @@ const theme = createTheme(themeOptions);
 
 function App() {
   const [gameState, setGameState] = useState<GameState>('game-board');
-  const [opponentName, setOpponentName] = useState<OpponentName>('Player 2');
+  const [opponentName, setOpponentName] = useState<OpponentName>('CPU');
 
   return (
     <Box className='app' mx={gameState === 'game-board' ? 0 : '2rem'}>

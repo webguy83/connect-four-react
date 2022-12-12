@@ -39,21 +39,41 @@ export default function GameBoard(props: GameBoardProps) {
   const [opponentScore, setOpponentScore] = useState<number>(0);
   const [tieGame, setTieGame] = useState(false);
 
+  const COLUMNS = 7;
+  const ROWS = 6;
+
+  interface Coords {
+    x: number;
+    y: number;
+  }
+
   function onRestartGameClick() {
+    resetOthers();
     setMainPlayerScore(0);
     setOpponentScore(0);
     setStartingPlayer('main');
     setCurrentPlayer('main');
-    resetOthers();
   }
 
+  useEffect(() => {
+    const output: Coords[] = [];
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 0; col < COLUMNS; col++) {
+        const x = 88 * col + 8;
+        const y = 88 * row + 8;
+        output.push({ x, y });
+      }
+    }
+    setRectAreaData(output);
+  }, [startingPlayer]);
+
   function onPlayAgainClick() {
+    resetOthers();
     setStartingPlayer((prevStartingPlayer) => {
       const startingPlayer = prevStartingPlayer === 'main' ? 'opponent' : 'main';
       setCurrentPlayer(startingPlayer);
       return startingPlayer;
     });
-    resetOthers();
   }
 
   function resetOthers() {
@@ -126,6 +146,7 @@ export default function GameBoard(props: GameBoardProps) {
                   setOpponentScore={setOpponentScore}
                   setMainPlayerScore={setMainPlayerScore}
                   setTieGame={setTieGame}
+                  opponentName={props.opponentName}
                 />
                 <ConnectFourGridBlack />
               </div>
