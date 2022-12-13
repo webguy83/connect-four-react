@@ -12,3 +12,8 @@ export interface RectAreaData {
   fullColumn?: boolean;
   winningArea?: boolean;
 }
+
+export interface Coords {
+  x: number;
+  y: number;
+}

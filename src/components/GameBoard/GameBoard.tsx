@@ -17,6 +17,7 @@ import { useTimer } from './hooks/useTimer';
 import { useLowerBarHeight } from './hooks/useLowerBarHeight';
 import { RectAreaData } from '../../utils/Interfaces';
 import { mainTransition } from '../../utils/Styles';
+import { generateInitialRectDataArray } from './helpers/helpers';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -42,11 +43,6 @@ export default function GameBoard(props: GameBoardProps) {
   const COLUMNS = 7;
   const ROWS = 6;
 
-  interface Coords {
-    x: number;
-    y: number;
-  }
-
   function onRestartGameClick() {
     resetOthers();
     setMainPlayerScore(0);
@@ -56,15 +52,8 @@ export default function GameBoard(props: GameBoardProps) {
   }
 
   useEffect(() => {
-    const output: Coords[] = [];
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLUMNS; col++) {
-        const x = 88 * col + 8;
-        const y = 88 * row + 8;
-        output.push({ x, y });
-      }
-    }
-    setRectAreaData(output);
+    const initRectData = generateInitialRectDataArray(COLUMNS, ROWS);
+    setRectAreaData(initRectData);
   }, [startingPlayer]);
 
   function onPlayAgainClick() {
@@ -80,7 +69,7 @@ export default function GameBoard(props: GameBoardProps) {
     clearTimer();
     setOpenPauseMenu(false);
     setWinner(null);
-    setRectAreaData([]);
+    setRectAreaData(generateInitialRectDataArray(COLUMNS, ROWS));
     setPlayerChips([]);
     setDisableUI(false);
     setTieGame(false);

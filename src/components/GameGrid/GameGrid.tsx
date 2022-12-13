@@ -7,6 +7,8 @@ import PlayerChip from '../GameObjects/PlayerChip/PlayerChip';
 import ConnectFourGridWhite from '../GameObjects/BoardGrid/ConnectFourGridWhite';
 import { mainGridStyles } from './GameGrid.styles';
 import { RectAreaData } from '../../utils/Interfaces';
+import { assignChipToLowestSlotPossibleIndex, getInitialCPUtargets } from './helpers/helpers';
+import { COLUMNS, ROWS, WINNING_LENGTH } from '../../utils/constants';
 
 interface ConnectFourGridProps {
   currentPlayer: Player;
@@ -34,24 +36,10 @@ export default function GameGrid(props: ConnectFourGridProps) {
   const selectedRectAreaRef = useRef<RectAreaData | null>(null);
   const [cpuInProgress, setCpuInProgress] = useState<boolean>(false);
   const [markerPos, setMarkerPos] = useState<number>(-100000000);
-  const COLUMNS = 7;
-  const ROWS = 6;
-  const WINNING_LENGTH = 4;
 
   const startCPUlogic = useCallback((rectA: RectAreaData[]) => {
-    for (let col = 0; col < COLUMNS; col++) {
-      let currentSelectedRectArea = { ...rectA[col] };
-      if (!currentSelectedRectArea.fullColumn) {
-        let counter = col;
-        while (currentSelectedRectArea && rectA[counter + COLUMNS]) {
-          if (!rectA[counter + COLUMNS].occupiedBy) {
-            currentSelectedRectArea = rectA[counter + COLUMNS];
-          }
-          counter += COLUMNS;
-        }
-        console.log(currentSelectedRectArea);
-      }
-    }
+    const rectAreas = getInitialCPUtargets(rectA, COLUMNS);
+    console.log(rectAreas);
   }, []);
 
   useEffect(() => {
@@ -88,7 +76,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
     props.pauseResumeTimer();
     props.setDisableUI(true);
     if (props.timerSeconds >= 0) {
-      const adjustedIndex = assignChipToLowestSlotPossibleIndex(index);
+      const adjustedIndex = assignChipToLowestSlotPossibleIndex(index, rectAreaData, COLUMNS, ROWS);
       const rect = rectAreaData[adjustedIndex];
       addExtraDataToRect(rect, adjustedIndex);
     }
@@ -134,20 +122,6 @@ export default function GameGrid(props: ConnectFourGridProps) {
       return newRectAreaData;
     });
     selectedRectAreaRef.current = rect;
-  }
-
-  function assignChipToLowestSlotPossibleIndex(index: number) {
-    let indexCounter = index;
-    if (rectAreaData[indexCounter]?.occupiedBy) {
-      while (indexCounter >= 0 && rectAreaData[indexCounter]?.occupiedBy) {
-        indexCounter -= COLUMNS;
-      }
-    } else {
-      while (indexCounter + COLUMNS < COLUMNS * ROWS && !rectAreaData[indexCounter + COLUMNS]?.occupiedBy) {
-        indexCounter += COLUMNS;
-      }
-    }
-    return indexCounter;
   }
 
   function swapToNextPlayer() {
