@@ -4,6 +4,7 @@ import { shadowStyle } from '../../utils/Styles';
 export const rulesRootStyles: SxProps<Theme> = (theme) => ({
   ...shadowStyle(theme),
   position: 'relative',
+  mx: '2rem',
   backgroundColor: theme.palette.secondary.light,
   padding: '3.4rem 2rem',
   [theme.breakpoints.up('sm')]: {

@@ -12,8 +12,7 @@ export const pauseMenuStyles: SxProps<Theme> = (theme) => ({
   transform: 'translate(-50%, -50%)',
   bgcolor: theme.palette.primary.light,
   p: 4,
-  maxWidth: '48rem',
-  width: 'clamp(35rem, 90vw, 48rem)',
+  width: 'clamp(24rem, 90vw, 48rem)',
 
   h2: {
     mt: '2.5rem',

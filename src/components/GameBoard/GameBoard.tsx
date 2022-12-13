@@ -114,7 +114,7 @@ export default function GameBoard(props: GameBoardProps) {
 
   return (
     <Fade in={true}>
-      <Box width='100%'>
+      <Box width='100%' height='100%' display='flex' justifyContent='center'>
         <Box sx={gameBoardContainerStyles}>
           <ScoreBox score={mainPlayerScore} Icon={<PlayerOne />} playerText='Player 1' />
           <div className='central-content'>

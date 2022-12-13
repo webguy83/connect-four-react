@@ -1,4 +1,3 @@
-import { Box } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useState } from 'react';
@@ -18,14 +17,14 @@ function App() {
   const [opponentName, setOpponentName] = useState<OpponentName>('CPU');
 
   return (
-    <Box className='app' mx={gameState === 'game-board' ? 0 : '2rem'}>
+    <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {gameState === 'main-menu' && <MainMenu setOpponentName={setOpponentName} setGameState={setGameState} />}
         {gameState === 'rules' && <Rules setGameState={setGameState} />}
         {gameState === 'game-board' && <GameBoard opponentIcon={opponentName === 'Player 2' ? <PlayerTwo /> : <CPUIcon />} opponentName={opponentName} setGameState={setGameState} />}
       </ThemeProvider>
-    </Box>
+    </>
   );
 }
 
