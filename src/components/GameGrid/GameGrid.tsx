@@ -44,10 +44,8 @@ export default function GameGrid(props: ConnectFourGridProps) {
 
   useEffect(() => {
     if (currentPlayer === 'opponent' && opponentName === 'CPU') {
-      if (rectAreaData.length > 0) {
-        setCpuInProgress(true);
-        startCPUlogic(rectAreaData);
-      }
+      setCpuInProgress(true);
+      startCPUlogic(rectAreaData);
     } else {
       setCpuInProgress(false);
     }

@@ -49,18 +49,19 @@ export default function GameBoard(props: GameBoardProps) {
     setOpponentScore(0);
     setStartingPlayer('main');
     setCurrentPlayer('main');
+    setRectAreaData(generateInitialRectDataArray(COLUMNS, ROWS));
   }
 
   useEffect(() => {
     const initRectData = generateInitialRectDataArray(COLUMNS, ROWS);
     setRectAreaData(initRectData);
+    setCurrentPlayer(startingPlayer);
   }, [startingPlayer]);
 
   function onPlayAgainClick() {
     resetOthers();
     setStartingPlayer((prevStartingPlayer) => {
       const startingPlayer = prevStartingPlayer === 'main' ? 'opponent' : 'main';
-      setCurrentPlayer(startingPlayer);
       return startingPlayer;
     });
   }
@@ -69,7 +70,6 @@ export default function GameBoard(props: GameBoardProps) {
     clearTimer();
     setOpenPauseMenu(false);
     setWinner(null);
-    setRectAreaData(generateInitialRectDataArray(COLUMNS, ROWS));
     setPlayerChips([]);
     setDisableUI(false);
     setTieGame(false);
