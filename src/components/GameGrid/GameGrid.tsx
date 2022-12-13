@@ -7,7 +7,7 @@ import PlayerChip from '../GameObjects/PlayerChip/PlayerChip';
 import ConnectFourGridWhite from '../GameObjects/BoardGrid/ConnectFourGridWhite';
 import { mainGridStyles } from './GameGrid.styles';
 import { RectAreaData } from '../../utils/Interfaces';
-import { assignChipToLowestSlotPossibleIndex, getInitialCPUtargets } from './helpers/helpers';
+import { assignChipToLowestSlotPossibleIndex, getInitialCPUtargets, isTieGame } from './helpers/helpers';
 import { COLUMNS, ROWS, WINNING_LENGTH } from '../../utils/constants';
 
 interface ConnectFourGridProps {
@@ -81,17 +81,13 @@ export default function GameGrid(props: ConnectFourGridProps) {
   };
 
   function addExtraDataToRect(rect: RectAreaData, index: number) {
-    if (rect) {
-      occupyPlayer(rect, index);
-      if (index < COLUMNS) {
-        applyFullColumn(index - COLUMNS);
-      }
-    } else {
-      applyFullColumn(index);
+    renderChipsAndAssignRectData(rect, index);
+    if (index < COLUMNS) {
+      applyFullColumnToRects(index - COLUMNS);
     }
   }
 
-  function applyFullColumn(indexCounter: number) {
+  function applyFullColumnToRects(indexCounter: number) {
     setMarkerPos(-100000000);
     setRectAreaData((oldData) => {
       const newRectAreaData = [...oldData];
@@ -103,13 +99,13 @@ export default function GameGrid(props: ConnectFourGridProps) {
     });
   }
 
-  function occupyPlayer(rect: RectAreaData, indexCounter: number) {
+  function renderChipsAndAssignRectData(rect: RectAreaData, indexCounter: number) {
     const x = rect.x + 44;
     const y = rect.y + 44;
     props.setPlayerChips((oldValues) => {
       return [
         ...oldValues,
-        <Slide key={new Date().getTime()} onEntered={checkForWin} in={props.timerSeconds > 0} timeout={500} container={containerRef.current}>
+        <Slide key={new Date().getTime()} onEntered={checkGameStatus} in={props.timerSeconds > 0} timeout={500} container={containerRef.current}>
           <PlayerChip colour={mainColour[currentPlayer]} x={x} y={y} />
         </Slide>,
       ];
@@ -135,31 +131,19 @@ export default function GameGrid(props: ConnectFourGridProps) {
     props.clearTimer();
   }
 
-  function isTieGame() {
-    const fullColumns = rectAreaData.filter((rectArea) => {
-      return rectArea.fullColumn;
-    });
-    if (fullColumns.length === COLUMNS * ROWS) {
+  function checkGameStatus() {
+    const isTied = isTieGame(rectAreaData, COLUMNS, ROWS);
+    if (isTied) {
       props.setTieGame(true);
+      return;
     }
-    return fullColumns.length === COLUMNS * ROWS;
-  }
 
-  function checkForWin() {
-    if (!isTieGame()) {
-      const currentRectArea = selectedRectAreaRef.current;
-      if (currentRectArea) {
-        if (checkVertical(currentRectArea)) {
-          props.setWinner(currentPlayer);
-        } else if (checkHorizonal(currentRectArea)) {
-          props.setWinner(currentPlayer);
-        } else if (checkDiagonalLeft(currentRectArea)) {
-          props.setWinner(currentPlayer);
-        } else if (checkDiagonalRight(currentRectArea)) {
-          props.setWinner(currentPlayer);
-        } else {
-          swapToNextPlayer();
-        }
+    const currentRectArea = selectedRectAreaRef.current;
+    if (currentRectArea) {
+      if (checkVertical(currentRectArea) || checkHorizonal(currentRectArea) || checkDiagonalLeft(currentRectArea) || checkDiagonalRight(currentRectArea)) {
+        props.setWinner(currentPlayer);
+      } else {
+        swapToNextPlayer();
       }
     }
   }
