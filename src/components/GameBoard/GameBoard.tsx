@@ -18,6 +18,7 @@ import { useLowerBarHeight } from './hooks/useLowerBarHeight';
 import { RectAreaData } from '../../utils/Interfaces';
 import { mainTransition } from '../../utils/Styles';
 import { generateInitialRectDataArray } from './helpers/helpers';
+import { COLUMNS, ROWS } from '../../utils/constants';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -39,9 +40,6 @@ export default function GameBoard(props: GameBoardProps) {
   const [mainPlayerScore, setMainPlayerScore] = useState<number>(0);
   const [opponentScore, setOpponentScore] = useState<number>(0);
   const [tieGame, setTieGame] = useState(false);
-
-  const COLUMNS = 7;
-  const ROWS = 6;
 
   function onRestartGameClick() {
     resetOthers();

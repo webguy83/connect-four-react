@@ -31,3 +31,10 @@ export function assignChipToLowestSlotPossibleIndex(index: number, rectA: RectAr
   }
   return indexCounter;
 }
+
+export function isTieGame(rectA: RectAreaData[], cols: number, rows: number) {
+  const fullColumns = rectA.filter((rectArea) => {
+    return rectArea.fullColumn;
+  });
+  return fullColumns.length === cols * rows;
+}
