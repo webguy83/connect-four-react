@@ -6,8 +6,8 @@ import MarkerIcon from '../Icons/MarkerIcon';
 import PlayerChip from '../GameObjects/PlayerChip/PlayerChip';
 import ConnectFourGridWhite from '../GameObjects/BoardGrid/ConnectFourGridWhite';
 import { mainGridStyles } from './GameGrid.styles';
-import { RectAreaData } from '../../utils/Interfaces';
-import { assignChipToLowestSlotPossibleIndex, getInitialCPUtargets, isTieGame, processForWinnersOrSwap } from './helpers/helpers';
+import { RankingInfo, RectAreaData } from '../../utils/Interfaces';
+import { assignChipToLowestSlotPossibleIndex, getHighestRankings, getInitialCPUtargets, getRankedIndexforCPU, isTieGame, processCPUchoiceRankings, processForWinnersOrSwap } from './helpers';
 import { COLUMNS, ROWS, WINNING_LENGTH } from '../../utils/constants';
 
 interface ConnectFourGridProps {
@@ -37,10 +37,41 @@ export default function GameGrid(props: ConnectFourGridProps) {
   const [cpuInProgress, setCpuInProgress] = useState<boolean>(false);
   const [markerPos, setMarkerPos] = useState<number>(-100000000);
 
-  const startCPUlogic = useCallback((rectA: RectAreaData[]) => {
-    const rectAreas = getInitialCPUtargets(rectA, COLUMNS);
-    console.log(rectAreas);
-  }, []);
+  function renderChipsAndAssignRectData(rect: RectAreaData, indexCounter: number) {
+    const x = rect.x + 44;
+    const y = rect.y + 44;
+    props.setPlayerChips((oldValues) => {
+      return [
+        ...oldValues,
+        <Slide key={new Date().getTime()} onEntered={checkGameStatus} in={props.timerSeconds > 0} timeout={500} container={containerRef.current}>
+          <PlayerChip colour={mainColour[currentPlayer]} x={x} y={y} />
+        </Slide>,
+      ];
+    });
+    setRectAreaData((oldData) => {
+      const newRectAreaData = [...oldData];
+      newRectAreaData[indexCounter].occupiedBy = currentPlayer;
+      return newRectAreaData;
+    });
+    selectedRectAreaRef.current = rect;
+  }
+
+  const startCPUlogic = useCallback(
+    (rectA: RectAreaData[]) => {
+      const rectAreas = getInitialCPUtargets(rectA, COLUMNS);
+      const rankings: RankingInfo[] = rectAreas.map((rectArea) => {
+        const ranking = processCPUchoiceRankings(rectArea, rectAreaData, COLUMNS, WINNING_LENGTH);
+        return {
+          index: rectArea.index,
+          ranking,
+        };
+      });
+      const highestRankings = getHighestRankings(rankings);
+      const rankedIndex = getRankedIndexforCPU(highestRankings);
+      console.log(rankedIndex);
+    },
+    [rectAreaData]
+  );
 
   useEffect(() => {
     if (currentPlayer === 'opponent' && opponentName === 'CPU') {
@@ -97,25 +128,6 @@ export default function GameGrid(props: ConnectFourGridProps) {
       }
       return newRectAreaData;
     });
-  }
-
-  function renderChipsAndAssignRectData(rect: RectAreaData, indexCounter: number) {
-    const x = rect.x + 44;
-    const y = rect.y + 44;
-    props.setPlayerChips((oldValues) => {
-      return [
-        ...oldValues,
-        <Slide key={new Date().getTime()} onEntered={checkGameStatus} in={props.timerSeconds > 0} timeout={500} container={containerRef.current}>
-          <PlayerChip colour={mainColour[currentPlayer]} x={x} y={y} />
-        </Slide>,
-      ];
-    });
-    setRectAreaData((oldData) => {
-      const newRectAreaData = [...oldData];
-      newRectAreaData[indexCounter].occupiedBy = { player: currentPlayer, index: indexCounter };
-      return newRectAreaData;
-    });
-    selectedRectAreaRef.current = rect;
   }
 
   function swapToNextPlayer() {

@@ -17,7 +17,7 @@ import { useTimer } from './hooks/useTimer';
 import { useLowerBarHeight } from './hooks/useLowerBarHeight';
 import { RectAreaData } from '../../utils/Interfaces';
 import { mainTransition } from '../../utils/Styles';
-import { generateInitialRectDataArray } from './helpers/helpers';
+import { generateInitialRectDataArray } from './helpers';
 import { COLUMNS, ROWS } from '../../utils/constants';
 
 interface GameBoardProps {

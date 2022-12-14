@@ -1,14 +1,10 @@
 import { Player } from './Types';
 
-interface OccupiedBy {
-  player: Player;
-  index: number;
-}
-
 export interface RectAreaData {
   x: number;
   y: number;
-  occupiedBy?: OccupiedBy;
+  index: number;
+  occupiedBy?: Player;
   fullColumn?: boolean;
   winningArea?: boolean;
 }
@@ -16,4 +12,10 @@ export interface RectAreaData {
 export interface Coords {
   x: number;
   y: number;
+  index: number;
+}
+
+export interface RankingInfo {
+  index: number;
+  ranking: number;
 }
