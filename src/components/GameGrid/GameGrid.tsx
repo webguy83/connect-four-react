@@ -36,6 +36,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
   const selectedRectAreaRef = useRef<RectAreaData | null>(null);
   const [cpuInProgress, setCpuInProgress] = useState<boolean>(false);
   const [markerPos, setMarkerPos] = useState<number>(-100000000);
+  const playerRef = useRef<Player>(currentPlayer);
 
   function renderChipsAndAssignRectData(rect: RectAreaData, indexCounter: number) {
     const x = rect.x + 44;
@@ -44,43 +45,34 @@ export default function GameGrid(props: ConnectFourGridProps) {
       return [
         ...oldValues,
         <Slide key={new Date().getTime()} onEntered={checkGameStatus} in={props.timerSeconds > 0} timeout={500} container={containerRef.current}>
-          <PlayerChip colour={mainColour[currentPlayer]} x={x} y={y} />
+          <PlayerChip colour={mainColour[playerRef.current]} x={x} y={y} />
         </Slide>,
       ];
     });
     setRectAreaData((oldData) => {
       const newRectAreaData = [...oldData];
-      newRectAreaData[indexCounter].occupiedBy = currentPlayer;
+      newRectAreaData[indexCounter].occupiedBy = playerRef.current;
       return newRectAreaData;
     });
     selectedRectAreaRef.current = rect;
   }
 
-  const startCPUlogic = useCallback(
-    (rectA: RectAreaData[]) => {
-      const rectAreas = getInitialCPUtargets(rectA, COLUMNS);
-      const rankings: RankingInfo[] = rectAreas.map((rectArea) => {
-        const ranking = processCPUchoiceRankings(rectArea, rectAreaData, COLUMNS, WINNING_LENGTH);
-        return {
-          index: rectArea.index,
-          ranking,
-        };
-      });
-      const highestRankings = getHighestRankings(rankings);
-      const rankedIndex = getRankedIndexforCPU(highestRankings);
-      console.log(rankedIndex);
-    },
-    [rectAreaData]
-  );
-
-  useEffect(() => {
-    if (currentPlayer === 'opponent' && opponentName === 'CPU') {
-      setCpuInProgress(true);
-      startCPUlogic(rectAreaData);
-    } else {
-      setCpuInProgress(false);
-    }
-  }, [currentPlayer, opponentName, rectAreaData, startCPUlogic]);
+  function startCPUlogic(rectAreaData: RectAreaData[]) {
+    const rectAreas = getInitialCPUtargets(rectAreaData, COLUMNS);
+    const rankings: RankingInfo[] = rectAreas.map((rectArea) => {
+      const ranking = processCPUchoiceRankings(rectArea, rectAreaData, COLUMNS, WINNING_LENGTH);
+      return {
+        index: rectArea.index,
+        ranking,
+      };
+    });
+    const highestRankings = getHighestRankings(rankings);
+    const rankedIndex = getRankedIndexforCPU(highestRankings);
+    const bestRanked = rectAreaData[rankedIndex];
+    const bestRect = { ...rectAreaData[bestRanked.index] };
+    bestRect.occupiedBy = 'opponent';
+    addExtraDataToRect(bestRect, bestRanked.index);
+  }
 
   function onMouseOverPiece(index: number) {
     if (!props.winner && !cpuInProgress) {
@@ -131,12 +123,17 @@ export default function GameGrid(props: ConnectFourGridProps) {
   }
 
   function swapToNextPlayer() {
-    if (currentPlayer === 'main') {
-      if (opponentName === 'CPU') {
-        setMarkerPos(-100000000);
-      }
+    if (playerRef.current === 'main') {
       props.setCurrentPlayer('opponent');
+      playerRef.current = 'opponent';
+      if (opponentName === 'CPU' && playerRef.current === 'opponent') {
+        setMarkerPos(-100000000);
+        setCpuInProgress(true);
+        startCPUlogic(rectAreaData);
+      }
     } else {
+      setCpuInProgress(false);
+      playerRef.current = 'main';
       props.setCurrentPlayer('main');
     }
     props.setDisableUI(false);
@@ -154,9 +151,9 @@ export default function GameGrid(props: ConnectFourGridProps) {
     if (currentRectArea) {
       const matches = processForWinnersOrSwap(currentRectArea, rectAreaData, COLUMNS, WINNING_LENGTH);
       if (matches.length >= WINNING_LENGTH) {
-        props.setWinner(currentPlayer);
+        props.setWinner(playerRef.current);
         props.setRectAreaData(matches);
-        if (currentPlayer === 'main') {
+        if (playerRef.current === 'main') {
           props.setMainPlayerScore((prevScore) => prevScore + 1);
         } else {
           props.setOpponentScore((prevScore) => prevScore + 1);
@@ -180,7 +177,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
           }),
         ]}
       >
-        <MarkerIcon colour={mainColour[currentPlayer]} />
+        <MarkerIcon colour={mainColour[playerRef.current]} />
       </Box>
 
       <svg ref={containerRef} className='white-grid' width='100%' height='100%' viewBox='0 0 632 584' xmlns='http://www.w3.org/2000/svg'>
@@ -201,7 +198,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
               <g key={i}>
                 {data.winningArea && (
                   <Fade in={true}>
-                    <Box component='circle' cx={data.x + 44} cy={data.y + 46} r='14' stroke='white' strokeWidth='6' fill={mainColour[currentPlayer]}></Box>
+                    <Box component='circle' cx={data.x + 44} cy={data.y + 46} r='14' stroke='white' strokeWidth='6' fill={mainColour[playerRef.current]}></Box>
                   </Fade>
                 )}
                 <Box

@@ -208,10 +208,5 @@ export function getHighestRankings(rankings: RankingInfo[]) {
 }
 
 export function getRankedIndexforCPU(rankings: RankingInfo[]) {
-  const centerColumnIndex = 3;
-  if (rankings[0].ranking < 2) {
-    return centerColumnIndex;
-  } else {
-    return rankings[Math.floor(Math.random() * rankings.length)].index;
-  }
+  return rankings[Math.floor(Math.random() * rankings.length)].index;
 }

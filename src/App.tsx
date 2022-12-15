@@ -13,8 +13,8 @@ import { GameState, OpponentName } from './utils/Types';
 const theme = createTheme(themeOptions);
 
 function App() {
-  const [gameState, setGameState] = useState<GameState>('game-board');
-  const [opponentName, setOpponentName] = useState<OpponentName>('CPU');
+  const [gameState, setGameState] = useState<GameState>('main-menu');
+  const [opponentName, setOpponentName] = useState<OpponentName>('Player 2');
 
   return (
     <>
