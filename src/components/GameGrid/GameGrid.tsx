@@ -31,51 +31,91 @@ interface ConnectFourGridProps {
 }
 
 export default function GameGrid(props: ConnectFourGridProps) {
-  const { setRectAreaData, rectAreaData, currentPlayer, opponentName } = props;
+  const { setRectAreaData, rectAreaData, currentPlayer, opponentName, setCurrentPlayer } = props;
   const containerRef = useRef(null);
   const selectedRectAreaRef = useRef<RectAreaData | null>(null);
-  const [cpuInProgress, setCpuInProgress] = useState<boolean>(false);
+  //const [cpuInProgress, setCpuInProgress] = useState<boolean>(false);
+  const cpuInProgressRef = useRef<boolean>(false);
   const [markerPos, setMarkerPos] = useState<number>(-100000000);
-  const playerRef = useRef<Player>(currentPlayer);
+  const [defaultCursor, setDefaultCursor] = useState(false);
 
-  function renderChipsAndAssignRectData(rect: RectAreaData, indexCounter: number) {
-    const x = rect.x + 44;
-    const y = rect.y + 44;
-    props.setPlayerChips((oldValues) => {
-      return [
-        ...oldValues,
-        <Slide key={new Date().getTime()} onEntered={checkGameStatus} in={props.timerSeconds > 0} timeout={500} container={containerRef.current}>
-          <PlayerChip colour={mainColour[playerRef.current]} x={x} y={y} />
-        </Slide>,
-      ];
-    });
-    setRectAreaData((oldData) => {
-      const newRectAreaData = [...oldData];
-      newRectAreaData[indexCounter].occupiedBy = playerRef.current;
-      return newRectAreaData;
-    });
-    selectedRectAreaRef.current = rect;
-  }
+  const swapToNextPlayer = useCallback(() => {
+    if (currentPlayer === 'main') {
+      setCurrentPlayer('opponent');
+    } else {
+      cpuInProgressRef.current = false;
+      setDefaultCursor(false);
+      setCurrentPlayer('main');
+    }
+    props.setDisableUI(false);
+    props.clearTimer();
+  }, [currentPlayer, props, setCurrentPlayer]);
 
-  function startCPUlogic(rectAreaData: RectAreaData[]) {
-    const rectAreas = getInitialCPUtargets(rectAreaData, COLUMNS);
-    const rankings: RankingInfo[] = rectAreas.map((rectArea) => {
-      const ranking = processCPUchoiceRankings(rectArea, rectAreaData, COLUMNS, WINNING_LENGTH);
-      return {
-        index: rectArea.index,
-        ranking,
-      };
-    });
-    const highestRankings = getHighestRankings(rankings);
-    const rankedIndex = getRankedIndexforCPU(highestRankings);
-    const bestRanked = rectAreaData[rankedIndex];
-    const bestRect = { ...rectAreaData[bestRanked.index] };
-    bestRect.occupiedBy = 'opponent';
-    addExtraDataToRect(bestRect, bestRanked.index);
-  }
+  const checkGameStatus = useCallback(() => {
+    const isTied = isTieGame(rectAreaData, COLUMNS, ROWS);
+    if (isTied) {
+      props.setTieGame(true);
+      return;
+    }
+
+    const currentRectArea = selectedRectAreaRef.current;
+    if (currentRectArea) {
+      const matches = processForWinnersOrSwap(currentRectArea, rectAreaData, COLUMNS, WINNING_LENGTH);
+      if (matches.length >= WINNING_LENGTH) {
+        props.setWinner(currentPlayer);
+        props.setRectAreaData(matches);
+        if (currentPlayer === 'main') {
+          props.setMainPlayerScore((prevScore) => prevScore + 1);
+        } else {
+          props.setOpponentScore((prevScore) => prevScore + 1);
+        }
+      } else {
+        swapToNextPlayer();
+      }
+    }
+  }, [currentPlayer, props, rectAreaData, swapToNextPlayer]);
+
+  const renderChipsAndAssignRectData = useCallback(
+    (rect: RectAreaData, indexCounter: number) => {
+      const x = rect.x + 44;
+      const y = rect.y + 44;
+      props.setPlayerChips((oldValues) => {
+        return [
+          ...oldValues,
+          <Slide key={new Date().getTime()} onEntered={checkGameStatus} in={props.timerSeconds > 0} timeout={500} container={containerRef.current}>
+            <PlayerChip colour={mainColour[currentPlayer]} x={x} y={y} />
+          </Slide>,
+        ];
+      });
+      setRectAreaData((oldData) => {
+        const newRectAreaData = [...oldData];
+        newRectAreaData[indexCounter].occupiedBy = currentPlayer;
+        return newRectAreaData;
+      });
+      selectedRectAreaRef.current = rect;
+    },
+    [checkGameStatus, currentPlayer, props, setRectAreaData]
+  );
+
+  // function startCPUlogic(rectAreaData: RectAreaData[]) {
+  //   const rectAreas = getInitialCPUtargets(rectAreaData, COLUMNS);
+  //   const rankings: RankingInfo[] = rectAreas.map((rectArea) => {
+  //     const ranking = processCPUchoiceRankings(rectArea, rectAreaData, COLUMNS, WINNING_LENGTH);
+  //     return {
+  //       index: rectArea.index,
+  //       ranking,
+  //     };
+  //   });
+  //   const highestRankings = getHighestRankings(rankings);
+  //   const rankedIndex = getRankedIndexforCPU(highestRankings);
+  //   const bestRanked = rectAreaData[rankedIndex];
+  //   const bestRect = { ...rectAreaData[bestRanked.index] };
+  //   bestRect.occupiedBy = 'opponent';
+  //   addExtraDataToRect(bestRect, bestRanked.index);
+  // }
 
   function onMouseOverPiece(index: number) {
-    if (!props.winner && !cpuInProgress) {
+    if (!props.winner && !cpuInProgressRef.current) {
       const rectData = rectAreaData[index];
       if (!rectData.fullColumn) {
         setMarkerPos(rectData.x + 24.86);
@@ -91,7 +131,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
   }
 
   const onRectClick = (index: number) => {
-    if (rectAreaData[index].fullColumn || props.disableUI || props.winner || cpuInProgress) {
+    if (rectAreaData[index].fullColumn || props.disableUI || props.winner || cpuInProgressRef.current) {
       return;
     }
     props.pauseResumeTimer();
@@ -103,66 +143,58 @@ export default function GameGrid(props: ConnectFourGridProps) {
     }
   };
 
-  function addExtraDataToRect(rect: RectAreaData, index: number) {
-    renderChipsAndAssignRectData(rect, index);
-    if (index < COLUMNS) {
-      applyFullColumnToRects(index - COLUMNS);
-    }
-  }
-
-  function applyFullColumnToRects(indexCounter: number) {
-    setMarkerPos(-100000000);
-    setRectAreaData((oldData) => {
-      const newRectAreaData = [...oldData];
-      while (indexCounter + COLUMNS < COLUMNS * ROWS) {
-        newRectAreaData[indexCounter + COLUMNS].fullColumn = true;
-        indexCounter += COLUMNS;
-      }
-      return newRectAreaData;
-    });
-  }
-
-  function swapToNextPlayer() {
-    if (playerRef.current === 'main') {
-      props.setCurrentPlayer('opponent');
-      playerRef.current = 'opponent';
-      if (opponentName === 'CPU' && playerRef.current === 'opponent') {
-        setMarkerPos(-100000000);
-        setCpuInProgress(true);
-        startCPUlogic(rectAreaData);
-      }
-    } else {
-      setCpuInProgress(false);
-      playerRef.current = 'main';
-      props.setCurrentPlayer('main');
-    }
-    props.setDisableUI(false);
-    props.clearTimer();
-  }
-
-  function checkGameStatus() {
-    const isTied = isTieGame(rectAreaData, COLUMNS, ROWS);
-    if (isTied) {
-      props.setTieGame(true);
-      return;
-    }
-
-    const currentRectArea = selectedRectAreaRef.current;
-    if (currentRectArea) {
-      const matches = processForWinnersOrSwap(currentRectArea, rectAreaData, COLUMNS, WINNING_LENGTH);
-      if (matches.length >= WINNING_LENGTH) {
-        props.setWinner(playerRef.current);
-        props.setRectAreaData(matches);
-        if (playerRef.current === 'main') {
-          props.setMainPlayerScore((prevScore) => prevScore + 1);
-        } else {
-          props.setOpponentScore((prevScore) => prevScore + 1);
+  const applyFullColumnToRects = useCallback(
+    (indexCounter: number) => {
+      setMarkerPos(-100000000);
+      setRectAreaData((oldData) => {
+        const newRectAreaData = [...oldData];
+        while (indexCounter + COLUMNS < COLUMNS * ROWS) {
+          newRectAreaData[indexCounter + COLUMNS].fullColumn = true;
+          indexCounter += COLUMNS;
         }
-      } else {
-        swapToNextPlayer();
+        return newRectAreaData;
+      });
+    },
+    [setRectAreaData]
+  );
+
+  const addExtraDataToRect = useCallback(
+    (rect: RectAreaData, index: number) => {
+      renderChipsAndAssignRectData(rect, index);
+      if (index < COLUMNS) {
+        applyFullColumnToRects(index - COLUMNS);
       }
+    },
+    [applyFullColumnToRects, renderChipsAndAssignRectData]
+  );
+
+  useEffect(() => {
+    if (opponentName === 'CPU' && currentPlayer === 'opponent') {
+      setMarkerPos(-100000000);
+      cpuInProgressRef.current = true;
+      setDefaultCursor(true);
+      //setCpuInProgress(true);
+
+      const rectAreas = getInitialCPUtargets(rectAreaData, COLUMNS);
+      const rankings: RankingInfo[] = rectAreas.map((rectArea) => {
+        const ranking = processCPUchoiceRankings(rectArea, rectAreaData, COLUMNS, WINNING_LENGTH);
+        return {
+          index: rectArea.index,
+          ranking,
+        };
+      });
+      const highestRankings = getHighestRankings(rankings);
+      const rankedIndex = getRankedIndexforCPU(highestRankings);
+      const bestRanked = rectAreaData[rankedIndex];
+      const bestRect = { ...rectAreaData[bestRanked.index] };
+      bestRect.occupiedBy = 'opponent';
+
+      addExtraDataToRect(bestRect, bestRanked.index);
+      setCurrentPlayer('main');
+      setDefaultCursor(false);
+      //startCPUlogic(rectAreaData);
     }
-  }
+  }, [addExtraDataToRect, currentPlayer, opponentName, rectAreaData, setCurrentPlayer]);
 
   return (
     <>
@@ -177,7 +209,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
           }),
         ]}
       >
-        <MarkerIcon colour={mainColour[playerRef.current]} />
+        <MarkerIcon colour={mainColour[currentPlayer]} />
       </Box>
 
       <svg ref={containerRef} className='white-grid' width='100%' height='100%' viewBox='0 0 632 584' xmlns='http://www.w3.org/2000/svg'>
@@ -198,14 +230,14 @@ export default function GameGrid(props: ConnectFourGridProps) {
               <g key={i}>
                 {data.winningArea && (
                   <Fade in={true}>
-                    <Box component='circle' cx={data.x + 44} cy={data.y + 46} r='14' stroke='white' strokeWidth='6' fill={mainColour[playerRef.current]}></Box>
+                    <Box component='circle' cx={data.x + 44} cy={data.y + 46} r='14' stroke='white' strokeWidth='6' fill='transparent'></Box>
                   </Fade>
                 )}
                 <Box
                   component='rect'
                   sx={{
                     '@media (hover: hover) and (pointer: fine)': {
-                      cursor: data.fullColumn || props.disableUI || props.winner || cpuInProgress ? 'default' : 'pointer',
+                      cursor: data.fullColumn || props.disableUI || props.winner || defaultCursor ? 'default' : 'pointer',
                     },
                   }}
                   onClick={() => onRectClick(i)}

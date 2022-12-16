@@ -6,7 +6,7 @@ export function useTimer() {
   const timerPausedRef = useRef<boolean>(false);
 
   const clearTimer = useCallback(() => {
-    setTimerSeconds(30);
+    setTimerSeconds(5);
     timerPausedRef.current = false;
 
     if (timerRef.current) {
