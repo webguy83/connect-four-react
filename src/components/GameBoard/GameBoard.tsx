@@ -1,5 +1,5 @@
 import { Box, Fade, Theme } from '@mui/material';
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import PillButton from '../Buttons/PillButton';
 import ConnectFourGridBlack from '../GameObjects/BoardGrid/ConnectFourGridBlack';
 import GameGrid from '../GameGrid/GameGrid';
@@ -11,14 +11,15 @@ import Logo from '../Logo/Logo';
 import { bottomBarStyles, gameBoardContainerStyles } from './GameBoard.styles';
 import Modal from '@mui/material/Modal';
 import PauseMenu from '../PauseMenu/PauseMenu';
-import { GameState, OpponentName, Player } from '../../utils/Types';
+import { GameState, OpponentName } from '../../utils/Types';
 import { mainColour } from '../../CustomTheme';
 import { useTimer } from './hooks/useTimer';
 import { useLowerBarHeight } from './hooks/useLowerBarHeight';
-import { RectAreaData } from '../../utils/Interfaces';
 import { mainTransition } from '../../utils/Styles';
 import { generateInitialRectDataArray } from './helpers';
 import { COLUMNS, ROWS } from '../../utils/constants';
+import { useInitialRectData } from './hooks/useInitialRectData';
+import { useWinner } from './hooks/useWinner';
 
 interface GameBoardProps {
   setGameState: Dispatch<SetStateAction<GameState>>;
@@ -27,19 +28,15 @@ interface GameBoardProps {
 }
 
 export default function GameBoard(props: GameBoardProps) {
-  const blockRef = useRef<HTMLDivElement>(null);
+  const lowerBlockRef = useRef<HTMLDivElement>(null);
   const [openPauseMenu, setOpenPauseMenu] = useState(false);
-  const [startingPlayer, setStartingPlayer] = useState<Player>('main');
-  const [currentPlayer, setCurrentPlayer] = useState<Player>(startingPlayer);
+  const { setStartingPlayer, currentPlayer, setCurrentPlayer, allClickAreasData, setAllClickAreasData } = useInitialRectData();
   const [playerChips, setPlayerChips] = useState<JSX.Element[]>([]);
-  const [rectAreaData, setRectAreaData] = useState<RectAreaData[]>([]);
-  const [winner, setWinner] = useState<Player | null>(null);
   const { timerSeconds, clearTimer, pauseResumeTimer } = useTimer();
-  const { lowerBarHeight } = useLowerBarHeight(blockRef.current);
+  const { lowerBarHeight } = useLowerBarHeight(lowerBlockRef.current);
   const [disableUI, setDisableUI] = useState(false);
-  const [mainPlayerScore, setMainPlayerScore] = useState<number>(0);
-  const [opponentScore, setOpponentScore] = useState<number>(0);
   const [tieGame, setTieGame] = useState(false);
+  const { setMainPlayerScore, setOpponentScore, winner, setWinner, opponentScore, mainPlayerScore } = useWinner(currentPlayer, timerSeconds);
 
   function onRestartGameClick() {
     resetOthers();
@@ -47,20 +44,14 @@ export default function GameBoard(props: GameBoardProps) {
     setOpponentScore(0);
     setStartingPlayer('main');
     setCurrentPlayer('main');
-    setRectAreaData(generateInitialRectDataArray(COLUMNS, ROWS));
+    setAllClickAreasData(generateInitialRectDataArray(COLUMNS, ROWS));
   }
-
-  useEffect(() => {
-    const initRectData = generateInitialRectDataArray(COLUMNS, ROWS);
-    setRectAreaData(initRectData);
-    setCurrentPlayer(startingPlayer);
-  }, [startingPlayer]);
 
   function onPlayAgainClick() {
     resetOthers();
     setStartingPlayer((prevStartingPlayer) => {
-      const startingPlayer = prevStartingPlayer === 'main' ? 'opponent' : 'main';
-      return startingPlayer;
+      const newStartPlayer = prevStartingPlayer === 'main' ? 'opponent' : 'main';
+      return newStartPlayer;
     });
   }
 
@@ -72,22 +63,6 @@ export default function GameBoard(props: GameBoardProps) {
     setDisableUI(false);
     setTieGame(false);
   }
-
-  const addWinner = useCallback(() => {
-    if (currentPlayer === 'main') {
-      setWinner('opponent');
-      setOpponentScore((prevScore) => prevScore + 1);
-    } else {
-      setWinner('main');
-      setMainPlayerScore((prevScore) => prevScore + 1);
-    }
-  }, [currentPlayer]);
-
-  useEffect(() => {
-    if (timerSeconds <= 0) {
-      addWinner();
-    }
-  }, [addWinner, timerSeconds]);
 
   function closeMenu() {
     setOpenPauseMenu(false);
@@ -119,7 +94,7 @@ export default function GameBoard(props: GameBoardProps) {
                 <GameGrid
                   currentPlayer={currentPlayer}
                   playerChips={playerChips}
-                  rectAreaData={rectAreaData}
+                  allClickAreasData={allClickAreasData}
                   pauseResumeTimer={pauseResumeTimer}
                   clearTimer={clearTimer}
                   setWinner={setWinner}
@@ -128,7 +103,7 @@ export default function GameBoard(props: GameBoardProps) {
                   winner={winner}
                   setPlayerChips={setPlayerChips}
                   setCurrentPlayer={setCurrentPlayer}
-                  setRectAreaData={setRectAreaData}
+                  setAllClickAreasData={setAllClickAreasData}
                   timerSeconds={timerSeconds}
                   setOpponentScore={setOpponentScore}
                   setMainPlayerScore={setMainPlayerScore}
@@ -137,7 +112,7 @@ export default function GameBoard(props: GameBoardProps) {
                 />
                 <ConnectFourGridBlack />
               </div>
-              <div ref={blockRef} className='timer-container'>
+              <div ref={lowerBlockRef} className='timer-container'>
                 {(winner || tieGame) && (
                   <Fade in={true}>
                     <WinnerBox tieGame={tieGame} onPlayAgainClick={onPlayAgainClick} currentPlayer={winner} opponentName={props.opponentName} />

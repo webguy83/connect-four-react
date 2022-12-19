@@ -1,7 +1,7 @@
-import { RankingInfo, RectAreaData } from '../../../utils/Interfaces';
+import { RankingInfo, ClickAreaData } from '../../../utils/Interfaces';
 
-export function getInitialCPUtargets(rectA: RectAreaData[], columns: number) {
-  const output: RectAreaData[] = [];
+export function getInitialCPUtargets(rectA: ClickAreaData[], columns: number) {
+  const output: ClickAreaData[] = [];
   for (let col = 0; col < columns; col++) {
     let currentSelectedRectArea = { ...rectA[col] };
     if (!currentSelectedRectArea.fullColumn) {
@@ -18,7 +18,7 @@ export function getInitialCPUtargets(rectA: RectAreaData[], columns: number) {
   return output;
 }
 
-export function assignChipToLowestSlotPossibleIndex(index: number, rectA: RectAreaData[], cols: number, rows: number) {
+export function assignChipToLowestSlotPossibleIndex(index: number, rectA: ClickAreaData[], cols: number, rows: number) {
   let indexCounter = index;
   if (rectA[indexCounter]?.occupiedBy) {
     while (indexCounter >= 0 && rectA[indexCounter]?.occupiedBy) {
@@ -32,15 +32,15 @@ export function assignChipToLowestSlotPossibleIndex(index: number, rectA: RectAr
   return indexCounter;
 }
 
-export function isTieGame(rectA: RectAreaData[], cols: number, rows: number) {
+export function isTieGame(rectA: ClickAreaData[], cols: number, rows: number) {
   const fullColumns = rectA.filter((rectArea) => {
     return rectArea.fullColumn;
   });
   return fullColumns.length === cols * rows;
 }
 
-export function verticalMatches(focusedRectArea: RectAreaData, gameRectAreas: RectAreaData[], cols: number) {
-  const selectedRectAreas: RectAreaData[] = [];
+export function verticalMatches(focusedRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number) {
+  const selectedRectAreas: ClickAreaData[] = [];
   if (focusedRectArea.occupiedBy) {
     let currentSelectedRectArea = { ...focusedRectArea };
     while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy) {
@@ -51,8 +51,8 @@ export function verticalMatches(focusedRectArea: RectAreaData, gameRectAreas: Re
   return selectedRectAreas;
 }
 
-export function horizonalMatches(focusedRectArea: RectAreaData, gameRectAreas: RectAreaData[]) {
-  const selectedRectAreas: RectAreaData[] = [];
+export function horizonalMatches(focusedRectArea: ClickAreaData, gameRectAreas: ClickAreaData[]) {
+  const selectedRectAreas: ClickAreaData[] = [];
   if (focusedRectArea.occupiedBy) {
     let currentSelectedRectArea = { ...focusedRectArea };
     while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy && focusedRectArea.y === currentSelectedRectArea.y) {
@@ -69,7 +69,7 @@ export function horizonalMatches(focusedRectArea: RectAreaData, gameRectAreas: R
   return selectedRectAreas;
 }
 
-function checkDiagonalBoundariesAndGetRect(rect1: RectAreaData, rect2: RectAreaData) {
+function checkDiagonalBoundariesAndGetRect(rect1: ClickAreaData, rect2: ClickAreaData) {
   if (rect1 && rect2 && rect1.y === rect2.y) {
     return rect2;
   } else {
@@ -77,8 +77,8 @@ function checkDiagonalBoundariesAndGetRect(rect1: RectAreaData, rect2: RectAreaD
   }
 }
 
-export function diagonalLeftMatches(focusedRectArea: RectAreaData, gameRectAreas: RectAreaData[], cols: number) {
-  const selectedRectAreas: RectAreaData[] = [];
+export function diagonalLeftMatches(focusedRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number) {
+  const selectedRectAreas: ClickAreaData[] = [];
   if (focusedRectArea.occupiedBy) {
     let currentSelectedRectArea = { ...focusedRectArea };
     while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy) {
@@ -101,8 +101,8 @@ export function diagonalLeftMatches(focusedRectArea: RectAreaData, gameRectAreas
   return selectedRectAreas;
 }
 
-export function diagonalRightMatches(focusedRectArea: RectAreaData, gameRectAreas: RectAreaData[], cols: number) {
-  const selectedRectAreas: RectAreaData[] = [];
+export function diagonalRightMatches(focusedRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number) {
+  const selectedRectAreas: ClickAreaData[] = [];
   if (focusedRectArea.occupiedBy) {
     let currentSelectedRectArea = { ...focusedRectArea };
     while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy) {
@@ -125,8 +125,8 @@ export function diagonalRightMatches(focusedRectArea: RectAreaData, gameRectArea
   return selectedRectAreas;
 }
 
-export function processForWinnersOrSwap(currentRectArea: RectAreaData, gameRectAreas: RectAreaData[], cols: number, winningLength: number) {
-  let matches: RectAreaData[] = [];
+export function processForWinnersOrSwap(currentRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number, winningLength: number) {
+  let matches: ClickAreaData[] = [];
   if (verticalMatches(currentRectArea, gameRectAreas, cols).length >= winningLength) {
     matches = verticalMatches(currentRectArea, gameRectAreas, cols);
   } else if (horizonalMatches(currentRectArea, gameRectAreas).length >= winningLength) {
@@ -139,7 +139,7 @@ export function processForWinnersOrSwap(currentRectArea: RectAreaData, gameRectA
 
   if (matches.length >= winningLength) {
     const updatedRects = gameRectAreas.map((rectArea, i) => {
-      const winnerRect: RectAreaData | undefined = matches.find((winningRect) => winningRect.index === i);
+      const winnerRect: ClickAreaData | undefined = matches.find((winningRect) => winningRect.index === i);
       if (winnerRect) {
         winnerRect.winningArea = true;
         return winnerRect;
@@ -152,9 +152,9 @@ export function processForWinnersOrSwap(currentRectArea: RectAreaData, gameRectA
   return matches;
 }
 
-export function processCPUchoiceRankings(currentRectArea: RectAreaData, gameRectAreas: RectAreaData[], cols: number, winningLength: number) {
-  const currentCpuRectArea: RectAreaData = { ...currentRectArea };
-  const currentPlayerRectArea: RectAreaData = { ...currentRectArea };
+export function processCPUchoiceRankings(currentRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number, winningLength: number) {
+  const currentCpuRectArea: ClickAreaData = { ...currentRectArea };
+  const currentPlayerRectArea: ClickAreaData = { ...currentRectArea };
   currentPlayerRectArea.occupiedBy = 'main';
   currentCpuRectArea.occupiedBy = 'opponent';
   let defaultRanking = 0;
@@ -185,7 +185,7 @@ export function processCPUchoiceRankings(currentRectArea: RectAreaData, gameRect
   return defaultRanking;
 }
 
-function checkIsAdjacentColEmpty(currentRectArea: RectAreaData, gameRectAreas: RectAreaData[]) {
+function checkIsAdjacentColEmpty(currentRectArea: ClickAreaData, gameRectAreas: ClickAreaData[]) {
   const leftRectArea = gameRectAreas[currentRectArea.index - 1];
   const rightRectArea = gameRectAreas[currentRectArea.index + 1];
   if ((leftRectArea && currentRectArea.y === leftRectArea.y && !leftRectArea.occupiedBy) || (rightRectArea && currentRectArea.y === rightRectArea.y && !rightRectArea.occupiedBy)) {

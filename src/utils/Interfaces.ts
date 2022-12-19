@@ -1,6 +1,6 @@
 import { Player } from './Types';
 
-export interface RectAreaData {
+export interface ClickAreaData {
   x: number;
   y: number;
   index: number;
