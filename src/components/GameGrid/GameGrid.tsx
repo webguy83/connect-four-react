@@ -123,6 +123,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
 
   const checkGameStatus = useCallback(
     (selectedClickAreaData: ClickAreaData | null) => {
+      lowestClickAreaRef.current = null;
       const isTied = isTieGame(allClickAreasData, COLUMNS, ROWS);
       if (isTied) {
         setTieGame(true);
@@ -164,11 +165,11 @@ export default function GameGrid(props: ConnectFourGridProps) {
     }
   }, [winner, allClickAreasData, setMainPlayerScore, setOpponentScore]);
 
-  useEffect(() => {
-    if (lowestClickAreaRef.current) {
-      lowestClickAreaRef.current = null;
-    }
-  }, [playerChips]);
+  // useEffect(() => {
+  //   if (lowestClickAreaRef.current) {
+  //     lowestClickAreaRef.current = null;
+  //   }
+  // }, [playerChips]);
 
   useEffect(() => {
     if (lowestClickAreaRef.current) {
