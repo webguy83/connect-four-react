@@ -30,9 +30,9 @@ interface GameBoardProps {
 export default function GameBoard(props: GameBoardProps) {
   const lowerBlockRef = useRef<HTMLDivElement>(null);
   const [openPauseMenu, setOpenPauseMenu] = useState(false);
-  const { setStartingPlayer, currentPlayer, setCurrentPlayer, allClickAreasData, setAllClickAreasData } = useInitialRectData();
+  const { setStartingPlayer, currentPlayer, setCurrentPlayer, allClickAreasData, setAllClickAreasData, startingPlayer } = useInitialRectData();
   const [playerChips, setPlayerChips] = useState<JSX.Element[]>([]);
-  const { timerSeconds, clearTimer, pauseResumeTimer } = useTimer();
+  const { timerSeconds, clearTimer, pauseTimer, resumeTimer } = useTimer();
   const { lowerBarHeight } = useLowerBarHeight(lowerBlockRef.current);
   const [disableUI, setDisableUI] = useState(false);
   const [tieGame, setTieGame] = useState(false);
@@ -44,12 +44,15 @@ export default function GameBoard(props: GameBoardProps) {
     setOpponentScore(0);
     setStartingPlayer('main');
     setCurrentPlayer('main');
-    setAllClickAreasData(generateInitialRectDataArray(COLUMNS, ROWS));
   }
 
   function onPlayAgainClick() {
     resetOthers();
     setStartingPlayer((prevStartingPlayer) => {
+      const newStartPlayer = prevStartingPlayer === 'main' ? 'opponent' : 'main';
+      return newStartPlayer;
+    });
+    setCurrentPlayer((prevStartingPlayer) => {
       const newStartPlayer = prevStartingPlayer === 'main' ? 'opponent' : 'main';
       return newStartPlayer;
     });
@@ -59,6 +62,7 @@ export default function GameBoard(props: GameBoardProps) {
     clearTimer();
     setOpenPauseMenu(false);
     setWinner(null);
+    setAllClickAreasData(generateInitialRectDataArray(COLUMNS, ROWS));
     setPlayerChips([]);
     setDisableUI(false);
     setTieGame(false);
@@ -66,12 +70,12 @@ export default function GameBoard(props: GameBoardProps) {
 
   function closeMenu() {
     setOpenPauseMenu(false);
-    pauseResumeTimer();
+    resumeTimer();
   }
 
   function openMenu() {
     setOpenPauseMenu(true);
-    pauseResumeTimer();
+    pauseTimer();
   }
 
   return (
@@ -95,7 +99,8 @@ export default function GameBoard(props: GameBoardProps) {
                   currentPlayer={currentPlayer}
                   playerChips={playerChips}
                   allClickAreasData={allClickAreasData}
-                  pauseResumeTimer={pauseResumeTimer}
+                  pauseTimer={pauseTimer}
+                  resumeTimer={resumeTimer}
                   clearTimer={clearTimer}
                   setWinner={setWinner}
                   setDisableUI={setDisableUI}

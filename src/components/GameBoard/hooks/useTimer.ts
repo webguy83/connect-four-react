@@ -6,7 +6,7 @@ export function useTimer() {
   const timerPausedRef = useRef<boolean>(false);
 
   const clearTimer = useCallback(() => {
-    setTimerSeconds(5);
+    setTimerSeconds(30);
     timerPausedRef.current = false;
 
     if (timerRef.current) {
@@ -29,7 +29,15 @@ export function useTimer() {
     }
   }, [timerSeconds]);
 
-  function pauseResumeTimer() {
+  function pauseTimer() {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+      timerPausedRef.current = true;
+    }
+  }
+
+  function resumeTimer() {
     if (timerPausedRef.current) {
       // currently paused and want to resume
       timerPausedRef.current = false;
@@ -37,13 +45,6 @@ export function useTimer() {
         loop();
       }, 1000);
       timerRef.current = id;
-    } else {
-      // currently playing and wanting to pause
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-        timerPausedRef.current = true;
-      }
     }
   }
 
@@ -54,6 +55,7 @@ export function useTimer() {
   return {
     clearTimer,
     timerSeconds,
-    pauseResumeTimer,
+    pauseTimer,
+    resumeTimer,
   };
 }
