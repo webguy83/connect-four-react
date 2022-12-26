@@ -28,7 +28,9 @@ interface ConnectFourGridProps {
   setOpponentScore: Dispatch<SetStateAction<number>>;
   setMainPlayerScore: Dispatch<SetStateAction<number>>;
   setTieGame: Dispatch<SetStateAction<boolean>>;
+  setGameEnded: Dispatch<SetStateAction<boolean>>;
   opponentName: OpponentName;
+  gameEnded: boolean;
 }
 
 export default function GameGrid(props: ConnectFourGridProps) {
@@ -50,6 +52,8 @@ export default function GameGrid(props: ConnectFourGridProps) {
     setOpponentScore,
     clearTimer,
     pauseTimer,
+    setGameEnded,
+    gameEnded,
   } = props;
   const containerRef = useRef(null);
   const initClickAreaRef = useRef<ClickAreaData | null>(null);
@@ -72,7 +76,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
   }
 
   function onRectClick(selectedClickAreaData: ClickAreaData) {
-    if (disableUI || selectedClickAreaData.fullColumn || (currentPlayer === 'opponent' && opponentName === 'CPU')) {
+    if (disableUI || selectedClickAreaData.fullColumn || (currentPlayer === 'opponent' && opponentName === 'CPU') || gameEnded) {
       return;
     }
     pauseTimer();
@@ -84,9 +88,6 @@ export default function GameGrid(props: ConnectFourGridProps) {
     (player: Player) => {
       if (player === 'main') {
         setCurrentPlayer('opponent');
-        // if (opponentName === 'CPU') {
-        //   setStartCpu(true);
-        // }
       } else {
         setCurrentPlayer('main');
       }
@@ -162,14 +163,9 @@ export default function GameGrid(props: ConnectFourGridProps) {
       } else {
         setOpponentScore((prevScore) => prevScore + 1);
       }
+      setGameEnded(true);
     }
-  }, [winner, allClickAreasData, setMainPlayerScore, setOpponentScore]);
-
-  // useEffect(() => {
-  //   if (lowestClickAreaRef.current) {
-  //     lowestClickAreaRef.current = null;
-  //   }
-  // }, [playerChips]);
+  }, [winner, allClickAreasData, setMainPlayerScore, setOpponentScore, setGameEnded]);
 
   useEffect(() => {
     if (lowestClickAreaRef.current) {

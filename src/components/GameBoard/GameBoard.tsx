@@ -30,13 +30,14 @@ interface GameBoardProps {
 export default function GameBoard(props: GameBoardProps) {
   const lowerBlockRef = useRef<HTMLDivElement>(null);
   const [openPauseMenu, setOpenPauseMenu] = useState(false);
-  const { setStartingPlayer, currentPlayer, setCurrentPlayer, allClickAreasData, setAllClickAreasData, startingPlayer } = useInitialRectData();
+  const { setStartingPlayer, currentPlayer, setCurrentPlayer, allClickAreasData, setAllClickAreasData } = useInitialRectData();
   const [playerChips, setPlayerChips] = useState<JSX.Element[]>([]);
   const { timerSeconds, clearTimer, pauseTimer, resumeTimer } = useTimer();
   const { lowerBarHeight } = useLowerBarHeight(lowerBlockRef.current);
   const [disableUI, setDisableUI] = useState(false);
   const [tieGame, setTieGame] = useState(false);
   const { setMainPlayerScore, setOpponentScore, winner, setWinner, opponentScore, mainPlayerScore } = useWinner(currentPlayer, timerSeconds);
+  const [gameEnded, setGameEnded] = useState(false);
 
   function onRestartGameClick() {
     resetOthers();
@@ -62,6 +63,7 @@ export default function GameBoard(props: GameBoardProps) {
     clearTimer();
     setOpenPauseMenu(false);
     setWinner(null);
+    setGameEnded(false);
     setAllClickAreasData(generateInitialRectDataArray(COLUMNS, ROWS));
     setPlayerChips([]);
     setDisableUI(false);
@@ -70,12 +72,16 @@ export default function GameBoard(props: GameBoardProps) {
 
   function closeMenu() {
     setOpenPauseMenu(false);
-    resumeTimer();
+    if (gameEnded === false) {
+      resumeTimer();
+    }
   }
 
   function openMenu() {
     setOpenPauseMenu(true);
-    pauseTimer();
+    if (gameEnded === false) {
+      pauseTimer();
+    }
   }
 
   return (
@@ -114,6 +120,8 @@ export default function GameBoard(props: GameBoardProps) {
                   setMainPlayerScore={setMainPlayerScore}
                   setTieGame={setTieGame}
                   opponentName={props.opponentName}
+                  setGameEnded={setGameEnded}
+                  gameEnded={gameEnded}
                 />
                 <ConnectFourGridBlack />
               </div>

@@ -9,10 +9,10 @@ export function useWinner(currentPlayer: Player, seconds: number) {
   const addWinner = useCallback(() => {
     if (currentPlayer === 'main') {
       setWinner('opponent');
-      setOpponentScore((prevScore) => prevScore + 1);
+      //setOpponentScore((prevScore) => prevScore + 1);
     } else {
       setWinner('main');
-      setMainPlayerScore((prevScore) => prevScore + 1);
+      //setMainPlayerScore((prevScore) => prevScore + 1);
     }
   }, [currentPlayer]);
 
