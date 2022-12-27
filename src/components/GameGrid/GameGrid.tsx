@@ -21,7 +21,6 @@ interface ConnectFourGridProps {
   setWinner: Dispatch<SetStateAction<Player | null>>;
   clearTimer: () => void;
   pauseTimer: () => void;
-  resumeTimer: () => void;
   timerSeconds: number;
   setDisableUI: Dispatch<SetStateAction<boolean>>;
   disableUI: boolean;
@@ -31,6 +30,7 @@ interface ConnectFourGridProps {
   setGameEnded: Dispatch<SetStateAction<boolean>>;
   opponentName: OpponentName;
   gameEnded: boolean;
+  menuOpened: boolean;
 }
 
 export default function GameGrid(props: ConnectFourGridProps) {
@@ -54,6 +54,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
     pauseTimer,
     setGameEnded,
     gameEnded,
+    menuOpened,
   } = props;
   const containerRef = useRef(null);
   const initClickAreaRef = useRef<ClickAreaData | null>(null);
@@ -95,32 +96,28 @@ export default function GameGrid(props: ConnectFourGridProps) {
     [setCurrentPlayer]
   );
 
-  const startCPUlogic = useCallback(
-    (allClickAreasData: ClickAreaData[]) => {
-      const rectAreas = getInitialCPUtargets(allClickAreasData, COLUMNS);
-      const rankings: RankingInfo[] = rectAreas.map((rectArea) => {
-        const ranking = processCPUchoiceRankings(rectArea, allClickAreasData, COLUMNS, WINNING_LENGTH);
-        return {
-          index: rectArea.index,
-          ranking,
-        };
-      });
-      const highestRankings = getHighestRankings(rankings);
-      const rankedIndex = getRankedIndexforCPU(highestRankings);
-      const bestRanked = allClickAreasData[rankedIndex];
-      const bestRect: ClickAreaData = { ...allClickAreasData[bestRanked.index] };
-      bestRect.occupiedBy = 'opponent';
-      pauseTimer();
-      initClickAreaRef.current = bestRect;
-      setDisableUI(true);
-    },
-    [pauseTimer, setDisableUI]
-  );
-
   useEffect(() => {
     setDisableUI(false);
     clearTimer();
+    setInitCpu(false);
   }, [clearTimer, setDisableUI, currentPlayer]);
+
+  useEffect(() => {
+    if (menuOpened) {
+      pauseTimer();
+    }
+  }, [menuOpened, pauseTimer]);
+
+  useEffect(() => {
+    if (winner) {
+      if (winner === 'main') {
+        setMainPlayerScore((prevScore) => prevScore + 1);
+      } else {
+        setOpponentScore((prevScore) => prevScore + 1);
+      }
+      setGameEnded(true);
+    }
+  }, [winner, setMainPlayerScore, setOpponentScore, setGameEnded]);
 
   const checkGameStatus = useCallback(
     (selectedClickAreaData: ClickAreaData | null) => {
@@ -142,30 +139,6 @@ export default function GameGrid(props: ConnectFourGridProps) {
     },
     [allClickAreasData, setAllClickAreasData, setTieGame, setWinner, swapToNextPlayer]
   );
-
-  useEffect(() => {
-    if (opponentName === 'CPU' && currentPlayer === 'opponent' && allClickAreasData.length > 0 && initCpu) {
-      setInitCpu(false);
-      startCPUlogic(allClickAreasData);
-    }
-  }, [opponentName, currentPlayer, allClickAreasData, startCPUlogic, initCpu]);
-
-  useEffect(() => {
-    if (opponentName === 'CPU' && currentPlayer === 'opponent') {
-      setInitCpu(true);
-    }
-  }, [opponentName, currentPlayer]);
-
-  useEffect(() => {
-    if (winner) {
-      if (winner === 'main') {
-        setMainPlayerScore((prevScore) => prevScore + 1);
-      } else {
-        setOpponentScore((prevScore) => prevScore + 1);
-      }
-      setGameEnded(true);
-    }
-  }, [winner, allClickAreasData, setMainPlayerScore, setOpponentScore, setGameEnded]);
 
   useEffect(() => {
     if (lowestClickAreaRef.current) {
@@ -208,6 +181,41 @@ export default function GameGrid(props: ConnectFourGridProps) {
       setAllClickAreasData(newClickAreas);
     }
   }, [allClickAreasData, currentPlayer, disableUI, setAllClickAreasData]);
+
+  const startCPUlogic = useCallback(
+    (allClickAreasData: ClickAreaData[]) => {
+      const rectAreas = getInitialCPUtargets(allClickAreasData, COLUMNS);
+      const rankings: RankingInfo[] = rectAreas.map((rectArea) => {
+        const ranking = processCPUchoiceRankings(rectArea, allClickAreasData, COLUMNS, WINNING_LENGTH);
+        return {
+          index: rectArea.index,
+          ranking,
+        };
+      });
+      const highestRankings = getHighestRankings(rankings);
+      const rankedIndex = getRankedIndexforCPU(highestRankings);
+      const bestRanked = allClickAreasData[rankedIndex];
+      const bestRect: ClickAreaData = { ...allClickAreasData[bestRanked.index] };
+      bestRect.occupiedBy = 'opponent';
+      pauseTimer();
+      initClickAreaRef.current = bestRect;
+      setDisableUI(true);
+    },
+    [pauseTimer, setDisableUI]
+  );
+
+  useEffect(() => {
+    if (opponentName === 'CPU' && currentPlayer === 'opponent' && initCpu) {
+      setInitCpu(false);
+      startCPUlogic(allClickAreasData);
+    }
+  }, [opponentName, currentPlayer, allClickAreasData, startCPUlogic, initCpu]);
+
+  useEffect(() => {
+    if (opponentName === 'CPU' && currentPlayer === 'opponent') {
+      setInitCpu(true);
+    }
+  }, [opponentName, currentPlayer]);
 
   return (
     <>

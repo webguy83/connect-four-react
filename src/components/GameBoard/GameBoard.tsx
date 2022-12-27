@@ -36,7 +36,8 @@ export default function GameBoard(props: GameBoardProps) {
   const { lowerBarHeight } = useLowerBarHeight(lowerBlockRef.current);
   const [disableUI, setDisableUI] = useState(false);
   const [tieGame, setTieGame] = useState(false);
-  const { setMainPlayerScore, setOpponentScore, winner, setWinner, opponentScore, mainPlayerScore } = useWinner(currentPlayer, timerSeconds);
+  const [mainPlayerScore, setMainPlayerScore] = useState<number>(0);
+  const { setOpponentScore, winner, setWinner, opponentScore } = useWinner(currentPlayer, timerSeconds);
   const [gameEnded, setGameEnded] = useState(false);
 
   function onRestartGameClick() {
@@ -60,12 +61,12 @@ export default function GameBoard(props: GameBoardProps) {
   }
 
   function resetOthers() {
+    setAllClickAreasData(generateInitialRectDataArray(COLUMNS, ROWS));
+    setPlayerChips([]);
     clearTimer();
     setOpenPauseMenu(false);
     setWinner(null);
     setGameEnded(false);
-    setAllClickAreasData(generateInitialRectDataArray(COLUMNS, ROWS));
-    setPlayerChips([]);
     setDisableUI(false);
     setTieGame(false);
   }
@@ -106,7 +107,6 @@ export default function GameBoard(props: GameBoardProps) {
                   playerChips={playerChips}
                   allClickAreasData={allClickAreasData}
                   pauseTimer={pauseTimer}
-                  resumeTimer={resumeTimer}
                   clearTimer={clearTimer}
                   setWinner={setWinner}
                   setDisableUI={setDisableUI}
@@ -122,6 +122,7 @@ export default function GameBoard(props: GameBoardProps) {
                   opponentName={props.opponentName}
                   setGameEnded={setGameEnded}
                   gameEnded={gameEnded}
+                  menuOpened={openPauseMenu}
                 />
                 <ConnectFourGridBlack />
               </div>
