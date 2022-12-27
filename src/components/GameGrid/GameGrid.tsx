@@ -7,7 +7,7 @@ import PlayerChip from '../GameObjects/PlayerChip/PlayerChip';
 import ConnectFourGridWhite from '../GameObjects/BoardGrid/ConnectFourGridWhite';
 import { mainGridStyles } from './GameGrid.styles';
 import { RankingInfo, ClickAreaData } from '../../utils/Interfaces';
-import { assignChipToLowestSlotPossibleIndex, getHighestRankings, getInitialCPUtargets, getRankedIndexforCPU, isTieGame, processCPUchoiceRankings, processForWinnersOrSwap } from './helpers';
+import { assignChipToLowestSlotPossibleIndex, getHighestRankings, getInitialCPUtargets, getRankedIndexforCPU, isTieGame, processCPUchoiceRankings, processForWinnersOrSwap, rankToCenter } from './helpers';
 import { COLUMNS, ROWS, WINNING_LENGTH } from '../../utils/constants';
 
 interface ConnectFourGridProps {
@@ -192,8 +192,15 @@ export default function GameGrid(props: ConnectFourGridProps) {
           ranking,
         };
       });
-      const highestRankings = getHighestRankings(rankings);
-      const rankedIndex = getRankedIndexforCPU(highestRankings);
+      const isCenterColumnPriority = rankToCenter(rankings, COLUMNS);
+      let rankedIndex = 0;
+      if (isCenterColumnPriority) {
+        rankedIndex = rankings[3].index;
+      } else {
+        const highestRankings = getHighestRankings(rankings);
+        rankedIndex = getRankedIndexforCPU(highestRankings);
+      }
+
       const bestRanked = allClickAreasData[rankedIndex];
       const bestRect: ClickAreaData = { ...allClickAreasData[bestRanked.index] };
       bestRect.occupiedBy = 'opponent';

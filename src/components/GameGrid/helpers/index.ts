@@ -1,174 +1,171 @@
 import { RankingInfo, ClickAreaData } from '../../../utils/Interfaces';
 
-export function getInitialCPUtargets(rectA: ClickAreaData[], columns: number) {
+export function getInitialCPUtargets(clickAreas: ClickAreaData[], columns: number) {
   const output: ClickAreaData[] = [];
   for (let col = 0; col < columns; col++) {
-    let currentSelectedRectArea = { ...rectA[col] };
-    if (!currentSelectedRectArea.fullColumn) {
+    let currentSelectedClickArea = { ...clickAreas[col] };
+    if (!currentSelectedClickArea.fullColumn) {
       let counter = col;
-      while (currentSelectedRectArea && rectA[counter + columns]) {
-        if (!rectA[counter + columns].occupiedBy) {
-          currentSelectedRectArea = rectA[counter + columns];
+      while (currentSelectedClickArea && clickAreas[counter + columns]) {
+        if (!clickAreas[counter + columns].occupiedBy) {
+          currentSelectedClickArea = clickAreas[counter + columns];
         }
         counter += columns;
       }
-      output.push(currentSelectedRectArea);
+      output.push(currentSelectedClickArea);
     }
   }
   return output;
 }
 
-export function assignChipToLowestSlotPossibleIndex(index: number, rectA: ClickAreaData[], cols: number, rows: number) {
+export function assignChipToLowestSlotPossibleIndex(index: number, clickAreas: ClickAreaData[], cols: number, rows: number) {
   let indexCounter = index;
-  if (rectA[indexCounter]?.occupiedBy) {
-    while (indexCounter >= 0 && rectA[indexCounter]?.occupiedBy) {
+  if (clickAreas[indexCounter]?.occupiedBy) {
+    while (indexCounter >= 0 && clickAreas[indexCounter]?.occupiedBy) {
       indexCounter -= cols;
     }
   } else {
-    while (indexCounter + cols < cols * rows && !rectA[indexCounter + cols]?.occupiedBy) {
+    while (indexCounter + cols < cols * rows && !clickAreas[indexCounter + cols]?.occupiedBy) {
       indexCounter += cols;
     }
   }
   return indexCounter;
 }
 
-export function isTieGame(rectA: ClickAreaData[], cols: number, rows: number) {
-  const fullColumns = rectA.filter((rectArea) => {
-    return rectArea.fullColumn;
+export function isTieGame(clickAreas: ClickAreaData[], cols: number, rows: number) {
+  const fullColumns = clickAreas.filter((clickArea) => {
+    return clickArea.fullColumn;
   });
   return fullColumns.length === cols * rows;
 }
 
-export function verticalMatches(focusedRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number) {
-  const selectedRectAreas: ClickAreaData[] = [];
-  if (focusedRectArea.occupiedBy) {
-    let currentSelectedRectArea = { ...focusedRectArea };
-    while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy) {
-      selectedRectAreas.push(currentSelectedRectArea);
-      currentSelectedRectArea = gameRectAreas[currentSelectedRectArea.index + cols];
+export function verticalMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number) {
+  const selectedClickAreas: ClickAreaData[] = [];
+  if (focusedClickArea.occupiedBy) {
+    let currentSelectedClickArea = { ...focusedClickArea };
+    while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy) {
+      selectedClickAreas.push(currentSelectedClickArea);
+      currentSelectedClickArea = clickAreasData[currentSelectedClickArea.index + cols];
     }
   }
-  return selectedRectAreas;
+  return selectedClickAreas;
 }
 
-export function horizonalMatches(focusedRectArea: ClickAreaData, gameRectAreas: ClickAreaData[]) {
-  const selectedRectAreas: ClickAreaData[] = [];
-  if (focusedRectArea.occupiedBy) {
-    let currentSelectedRectArea = { ...focusedRectArea };
-    while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy && focusedRectArea.y === currentSelectedRectArea.y) {
-      selectedRectAreas.push(currentSelectedRectArea);
-      currentSelectedRectArea = gameRectAreas[currentSelectedRectArea.index - 1];
+export function horizonalMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[]) {
+  const selectedClickAreas: ClickAreaData[] = [];
+  if (focusedClickArea.occupiedBy) {
+    let currentSelectedClickArea = { ...focusedClickArea };
+    while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy && focusedClickArea.y === currentSelectedClickArea.y) {
+      selectedClickAreas.push(currentSelectedClickArea);
+      currentSelectedClickArea = clickAreasData[currentSelectedClickArea.index - 1];
     }
 
-    currentSelectedRectArea = gameRectAreas[focusedRectArea.index + 1];
-    while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy && focusedRectArea.y === currentSelectedRectArea.y) {
-      selectedRectAreas.push(currentSelectedRectArea);
-      currentSelectedRectArea = gameRectAreas[currentSelectedRectArea.index + 1];
+    currentSelectedClickArea = clickAreasData[focusedClickArea.index + 1];
+    while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy && focusedClickArea.y === currentSelectedClickArea.y) {
+      selectedClickAreas.push(currentSelectedClickArea);
+      currentSelectedClickArea = clickAreasData[currentSelectedClickArea.index + 1];
     }
   }
-  return selectedRectAreas;
+  return selectedClickAreas;
 }
 
-function checkDiagonalBoundariesAndGetRect(rect1: ClickAreaData, rect2: ClickAreaData) {
-  if (rect1 && rect2 && rect1.y === rect2.y) {
-    return rect2;
+function checkDiagonalBoundariesAndGetClickArea(clickArea1: ClickAreaData, clickArea2: ClickAreaData) {
+  if (clickArea1 && clickArea2 && clickArea1.y === clickArea2.y) {
+    return clickArea2;
   } else {
-    return { ...rect2, occupiedBy: undefined };
+    return { ...clickArea2, occupiedBy: undefined };
   }
 }
 
-export function diagonalLeftMatches(focusedRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number) {
-  const selectedRectAreas: ClickAreaData[] = [];
-  if (focusedRectArea.occupiedBy) {
-    let currentSelectedRectArea = { ...focusedRectArea };
-    while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy) {
-      selectedRectAreas.push(currentSelectedRectArea);
-      const rectArea1 = gameRectAreas[currentSelectedRectArea.index - cols];
-      const rectArea2 = gameRectAreas[currentSelectedRectArea.index - cols - 1];
-      currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
+export function diagonalLeftMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number) {
+  const selectedClickAreas: ClickAreaData[] = [];
+  if (focusedClickArea.occupiedBy) {
+    let currentSelectedClickArea = { ...focusedClickArea };
+    while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy) {
+      selectedClickAreas.push(currentSelectedClickArea);
+      const clickArea1 = clickAreasData[currentSelectedClickArea.index - cols];
+      const clickArea2 = clickAreasData[currentSelectedClickArea.index - cols - 1];
+      currentSelectedClickArea = checkDiagonalBoundariesAndGetClickArea(clickArea1, clickArea2);
     }
 
-    const rectArea1 = gameRectAreas[focusedRectArea.index + cols];
-    const rectArea2 = gameRectAreas[focusedRectArea.index + cols + 1];
-    currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
-    while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy) {
-      selectedRectAreas.push(currentSelectedRectArea);
-      const rectArea1 = gameRectAreas[currentSelectedRectArea.index + cols];
-      const rectArea2 = gameRectAreas[currentSelectedRectArea.index + cols + 1];
-      currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
-    }
-  }
-  return selectedRectAreas;
-}
-
-export function diagonalRightMatches(focusedRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number) {
-  const selectedRectAreas: ClickAreaData[] = [];
-  if (focusedRectArea.occupiedBy) {
-    let currentSelectedRectArea = { ...focusedRectArea };
-    while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy) {
-      selectedRectAreas.push(currentSelectedRectArea);
-      const rectArea1 = gameRectAreas[currentSelectedRectArea.index + cols];
-      const rectArea2 = gameRectAreas[currentSelectedRectArea.index + cols - 1];
-      currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
-    }
-
-    const rectArea1 = gameRectAreas[focusedRectArea.index - cols];
-    const rectArea2 = gameRectAreas[focusedRectArea.index - cols + 1];
-    currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
-    while (currentSelectedRectArea && focusedRectArea.occupiedBy === currentSelectedRectArea.occupiedBy) {
-      selectedRectAreas.push(currentSelectedRectArea);
-      const rectArea1 = gameRectAreas[currentSelectedRectArea.index - cols];
-      const rectArea2 = gameRectAreas[currentSelectedRectArea.index - cols + 1];
-      currentSelectedRectArea = checkDiagonalBoundariesAndGetRect(rectArea1, rectArea2);
+    const clickArea1 = clickAreasData[focusedClickArea.index + cols];
+    const clickArea2 = clickAreasData[focusedClickArea.index + cols + 1];
+    currentSelectedClickArea = checkDiagonalBoundariesAndGetClickArea(clickArea1, clickArea2);
+    while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy) {
+      selectedClickAreas.push(currentSelectedClickArea);
+      const clickArea1 = clickAreasData[currentSelectedClickArea.index + cols];
+      const clickArea2 = clickAreasData[currentSelectedClickArea.index + cols + 1];
+      currentSelectedClickArea = checkDiagonalBoundariesAndGetClickArea(clickArea1, clickArea2);
     }
   }
-  return selectedRectAreas;
+  return selectedClickAreas;
 }
 
-export function processForWinnersOrSwap(currentRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number, winningLength: number) {
+export function diagonalRightMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number) {
+  const selectedClickAreas: ClickAreaData[] = [];
+  if (focusedClickArea.occupiedBy) {
+    let currentSelectedClickArea = { ...focusedClickArea };
+    while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy) {
+      selectedClickAreas.push(currentSelectedClickArea);
+      const clickArea1 = clickAreasData[currentSelectedClickArea.index + cols];
+      const clickArea2 = clickAreasData[currentSelectedClickArea.index + cols - 1];
+      currentSelectedClickArea = checkDiagonalBoundariesAndGetClickArea(clickArea1, clickArea2);
+    }
+
+    const clickArea1 = clickAreasData[focusedClickArea.index - cols];
+    const clickArea2 = clickAreasData[focusedClickArea.index - cols + 1];
+    currentSelectedClickArea = checkDiagonalBoundariesAndGetClickArea(clickArea1, clickArea2);
+    while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy) {
+      selectedClickAreas.push(currentSelectedClickArea);
+      const clickArea1 = clickAreasData[currentSelectedClickArea.index - cols];
+      const clickArea2 = clickAreasData[currentSelectedClickArea.index - cols + 1];
+      currentSelectedClickArea = checkDiagonalBoundariesAndGetClickArea(clickArea1, clickArea2);
+    }
+  }
+  return selectedClickAreas;
+}
+
+export function processForWinnersOrSwap(currentClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number, winningLength: number) {
   let matches: ClickAreaData[] = [];
-  if (verticalMatches(currentRectArea, gameRectAreas, cols).length >= winningLength) {
-    matches = verticalMatches(currentRectArea, gameRectAreas, cols);
-  } else if (horizonalMatches(currentRectArea, gameRectAreas).length >= winningLength) {
-    matches = horizonalMatches(currentRectArea, gameRectAreas);
-  } else if (diagonalLeftMatches(currentRectArea, gameRectAreas, cols).length >= winningLength) {
-    matches = diagonalLeftMatches(currentRectArea, gameRectAreas, cols);
-  } else if (diagonalRightMatches(currentRectArea, gameRectAreas, cols).length >= winningLength) {
-    matches = diagonalRightMatches(currentRectArea, gameRectAreas, cols);
+  if (verticalMatches(currentClickArea, clickAreasData, cols).length >= winningLength) {
+    matches = verticalMatches(currentClickArea, clickAreasData, cols);
+  } else if (horizonalMatches(currentClickArea, clickAreasData).length >= winningLength) {
+    matches = horizonalMatches(currentClickArea, clickAreasData);
+  } else if (diagonalLeftMatches(currentClickArea, clickAreasData, cols).length >= winningLength) {
+    matches = diagonalLeftMatches(currentClickArea, clickAreasData, cols);
+  } else if (diagonalRightMatches(currentClickArea, clickAreasData, cols).length >= winningLength) {
+    matches = diagonalRightMatches(currentClickArea, clickAreasData, cols);
   }
 
   if (matches.length >= winningLength) {
-    const updatedRects = gameRectAreas.map((rectArea, i) => {
-      const winnerRect: ClickAreaData | undefined = matches.find((winningRect) => winningRect.index === i);
-      if (winnerRect) {
-        winnerRect.winningArea = true;
-        return winnerRect;
+    const updatedClicks = clickAreasData.map((clickArea, i) => {
+      const winnerClick: ClickAreaData | undefined = matches.find((winningClick) => winningClick.index === i);
+      if (winnerClick) {
+        winnerClick.winningArea = true;
+        return winnerClick;
       }
-      return rectArea;
+      return clickArea;
     });
-    return updatedRects;
+    return updatedClicks;
   }
 
   return matches;
 }
 
-export function processCPUchoiceRankings(currentRectArea: ClickAreaData, gameRectAreas: ClickAreaData[], cols: number, winningLength: number) {
-  const currentCpuRectArea: ClickAreaData = { ...currentRectArea };
-  const currentPlayerRectArea: ClickAreaData = { ...currentRectArea };
-  currentPlayerRectArea.occupiedBy = 'main';
-  currentCpuRectArea.occupiedBy = 'opponent';
+export function processCPUchoiceRankings(currentClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number, winningLength: number) {
+  const currentCpuClickArea: ClickAreaData = { ...currentClickArea };
+  const currentPlayerClickArea: ClickAreaData = { ...currentClickArea };
+  currentPlayerClickArea.occupiedBy = 'main';
+  currentCpuClickArea.occupiedBy = 'opponent';
   let defaultRanking = 0;
-  const verticalCpuMatchesLength = verticalMatches(currentCpuRectArea, gameRectAreas, cols).length;
-  const verticalPlayerMatchesLength = verticalMatches(currentPlayerRectArea, gameRectAreas, cols).length;
-  const horizonalCpuMatchesLength = horizonalMatches(currentCpuRectArea, gameRectAreas).length;
-  const horizonalPlayerMatchesLength = horizonalMatches(currentPlayerRectArea, gameRectAreas).length;
-  const diagonalCpuLeftMatchesLength = diagonalLeftMatches(currentCpuRectArea, gameRectAreas, cols).length;
-  const diagonalPlayerLeftMatchesLength = diagonalLeftMatches(currentPlayerRectArea, gameRectAreas, cols).length;
-  const diagonalCpuRightMatchesLength = diagonalRightMatches(currentCpuRectArea, gameRectAreas, cols).length;
-  const diagonalPlayerRightMatchesLength = diagonalRightMatches(currentPlayerRectArea, gameRectAreas, cols).length;
-  // const matchesCPULength = verticalCpuMatchesLength || horizonalCpuMatchesLength || diagonalCpuLeftMatchesLength || diagonalCpuRightMatchesLength;
-  // const matchesPlayerLength = verticalPlayerMatchesLength || horizonalPlayerMatchesLength || diagonalPlayerLeftMatchesLength || diagonalPlayerRightMatchesLength;
-  // console.log(Math.max(verticalPlayerMatchesLength, horizonalPlayerMatchesLength, diagonalPlayerLeftMatchesLength, diagonalPlayerRightMatchesLength));
+  const verticalCpuMatchesLength = verticalMatches(currentCpuClickArea, clickAreasData, cols).length;
+  const verticalPlayerMatchesLength = verticalMatches(currentPlayerClickArea, clickAreasData, cols).length;
+  const horizonalCpuMatchesLength = horizonalMatches(currentCpuClickArea, clickAreasData).length;
+  const horizonalPlayerMatchesLength = horizonalMatches(currentPlayerClickArea, clickAreasData).length;
+  const diagonalCpuLeftMatchesLength = diagonalLeftMatches(currentCpuClickArea, clickAreasData, cols).length;
+  const diagonalPlayerLeftMatchesLength = diagonalLeftMatches(currentPlayerClickArea, clickAreasData, cols).length;
+  const diagonalCpuRightMatchesLength = diagonalRightMatches(currentCpuClickArea, clickAreasData, cols).length;
+  const diagonalPlayerRightMatchesLength = diagonalRightMatches(currentPlayerClickArea, clickAreasData, cols).length;
 
   const matchesCPULength = Math.max(verticalCpuMatchesLength, horizonalCpuMatchesLength, diagonalCpuLeftMatchesLength, diagonalCpuRightMatchesLength);
   const matchesPlayerLength = Math.max(verticalPlayerMatchesLength, horizonalPlayerMatchesLength, diagonalPlayerLeftMatchesLength, diagonalPlayerRightMatchesLength);
@@ -177,18 +174,18 @@ export function processCPUchoiceRankings(currentRectArea: ClickAreaData, gameRec
     defaultRanking = 5;
   } else if (matchesPlayerLength >= winningLength) {
     defaultRanking = 4;
-  } else if ((matchesCPULength || matchesPlayerLength) >= 3 && checkIsAdjacentColEmpty(currentCpuRectArea, gameRectAreas)) {
-    defaultRanking = 3;
+  } else if ((matchesCPULength || matchesPlayerLength) >= 3 && checkIsAdjacentColEmpty(currentCpuClickArea, clickAreasData)) {
+    defaultRanking = 2;
   } else if (matchesCPULength >= 2) {
     defaultRanking = 1;
   }
   return defaultRanking;
 }
 
-function checkIsAdjacentColEmpty(currentRectArea: ClickAreaData, gameRectAreas: ClickAreaData[]) {
-  const leftRectArea = gameRectAreas[currentRectArea.index - 1];
-  const rightRectArea = gameRectAreas[currentRectArea.index + 1];
-  if ((leftRectArea && currentRectArea.y === leftRectArea.y && !leftRectArea.occupiedBy) || (rightRectArea && currentRectArea.y === rightRectArea.y && !rightRectArea.occupiedBy)) {
+function checkIsAdjacentColEmpty(currentClickArea: ClickAreaData, clickAreasData: ClickAreaData[]) {
+  const leftClickArea = clickAreasData[currentClickArea.index - 1];
+  const rightClickArea = clickAreasData[currentClickArea.index + 1];
+  if ((leftClickArea && currentClickArea.y === leftClickArea.y && !leftClickArea.occupiedBy) || (rightClickArea && currentClickArea.y === rightClickArea.y && !rightClickArea.occupiedBy)) {
     return true;
   }
   return false;
@@ -209,4 +206,14 @@ export function getHighestRankings(rankings: RankingInfo[]) {
 
 export function getRankedIndexforCPU(rankings: RankingInfo[]) {
   return rankings[Math.floor(Math.random() * rankings.length)].index;
+}
+
+export function rankToCenter(rankings: RankingInfo[], cols: number) {
+  if (rankings.length === cols) {
+    const filteredRanks = rankings.filter((r) => r.ranking < 3);
+    if (filteredRanks.length === cols) {
+      return true;
+    }
+  }
+  return false;
 }
