@@ -47,10 +47,12 @@ export default function MainMenu(props: MainMenuProps) {
       {menuGlobalStyles}
       <Fade in={true}>
         <Box maxWidth={480} display='flex' flexDirection='column' alignItems='center' sx={MainMenuContainerStyle} borderRadius={10}>
-          <Box mb={7.5}>
-            <Logo />
+          <Box component='header' mb={7.5}>
+            <h1>
+              <Logo />
+            </h1>
           </Box>
-          <Stack spacing={3}>
+          <Stack component='main' spacing={3}>
             <RectangleButton className='playVsCpu' onClick={onCpuBtnClicked} variant='contained' endIcon={<PlayerVsCpuIcon />}>
               <Box component='span'>Play vs CPU</Box>
             </RectangleButton>
