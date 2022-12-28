@@ -95,7 +95,7 @@ function checkDiagonalBoundariesAndGetClickArea(clickArea1: ClickAreaData, click
   }
 }
 
-export function diagonalLeftMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number) {
+export function diagonalLeftMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number, checkedForAdditionMatch = false) {
   const selectedClickAreas: ClickAreaData[] = [];
   if (focusedClickArea.occupiedBy) {
     let currentSelectedClickArea: ClickAreaData = { ...focusedClickArea };
@@ -175,7 +175,7 @@ export function processCPUchoiceRankings(currentClickArea: ClickAreaData, clickA
   const currentPlayerClickArea: ClickAreaData = { ...currentClickArea };
   currentPlayerClickArea.occupiedBy = 'main';
   currentCpuClickArea.occupiedBy = 'opponent';
-  let defaultRanking = 0;
+  let defaultRanking = 1;
   const verticalCpuMatchesLength = verticalMatches(currentCpuClickArea, clickAreasData, cols).length;
   const verticalPlayerMatchesLength = verticalMatches(currentPlayerClickArea, clickAreasData, cols).length;
   const horizonalCpuMatchesLength = horizonalMatches(currentCpuClickArea, clickAreasData).length;
@@ -189,23 +189,64 @@ export function processCPUchoiceRankings(currentClickArea: ClickAreaData, clickA
   const matchesPlayerLength = Math.max(verticalPlayerMatchesLength, horizonalPlayerMatchesLength, diagonalPlayerLeftMatchesLength, diagonalPlayerRightMatchesLength);
 
   if (matchesCPULength >= winningLength) {
-    defaultRanking = 5;
+    defaultRanking = 6;
   } else if (matchesPlayerLength >= winningLength) {
-    defaultRanking = 4;
+    defaultRanking = 5;
   } else if (checkForEasyPlayerWins(currentPlayerClickArea, clickAreasData, winningLength)) {
+    defaultRanking = 4;
+  } else if (checkNextMoves(currentCpuClickArea, clickAreasData, cols, winningLength)) {
+    defaultRanking = 0;
+  } else if ((matchesCPULength || matchesPlayerLength) >= 3 && checkIsAdjacentColEmpty(currentCpuClickArea, clickAreasData, cols)) {
     defaultRanking = 3;
-  } else if ((matchesCPULength || matchesPlayerLength) >= 3 && checkIsAdjacentColEmpty(currentCpuClickArea, clickAreasData)) {
-    defaultRanking = 2;
   } else if (matchesCPULength >= 2) {
-    defaultRanking = 1;
+    defaultRanking = 2;
   }
   return defaultRanking;
 }
 
-function checkIsAdjacentColEmpty(currentClickArea: ClickAreaData, clickAreasData: ClickAreaData[]) {
+function checkNextMoves(currentCpuClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number, winningLength: number) {
+  const modifiedClickAreasData = [...clickAreasData];
+  const nextMoveClickArea = { ...modifiedClickAreasData[currentCpuClickArea.index - cols] };
+  if (nextMoveClickArea) {
+    nextMoveClickArea.occupiedBy = 'opponent';
+    const horizonalOpponentMoves = horizonalMatches(nextMoveClickArea, clickAreasData);
+    if (horizonalOpponentMoves.length >= winningLength) {
+      return true;
+    }
+    const diagonalLeftOpponentMoves = diagonalLeftMatches(nextMoveClickArea, clickAreasData, cols);
+    if (diagonalLeftOpponentMoves.length >= winningLength) {
+      return true;
+    }
+    const diagonalRightOpponentMoves = diagonalRightMatches(nextMoveClickArea, clickAreasData, cols);
+    if (diagonalRightOpponentMoves.length >= winningLength) {
+      return true;
+    }
+    nextMoveClickArea.occupiedBy = 'main';
+    const horizonalMainMoves = horizonalMatches(nextMoveClickArea, clickAreasData);
+    if (horizonalMainMoves.length >= winningLength) {
+      return true;
+    }
+    const diagonalLeftMainMoves = diagonalLeftMatches(nextMoveClickArea, clickAreasData, cols);
+    if (diagonalLeftMainMoves.length >= winningLength) {
+      return true;
+    }
+    const diagonalRightMainMoves = diagonalRightMatches(nextMoveClickArea, clickAreasData, cols);
+    if (diagonalRightMainMoves.length >= winningLength) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function checkIsAdjacentColEmpty(currentClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number) {
   const leftClickArea = clickAreasData[currentClickArea.index - 1];
   const rightClickArea = clickAreasData[currentClickArea.index + 1];
+  const topClickArea = clickAreasData[currentClickArea.index - cols];
+  const higherTopClickArea = clickAreasData[currentClickArea.index - cols * 2];
   if ((leftClickArea && currentClickArea.y === leftClickArea.y && !leftClickArea.occupiedBy) || (rightClickArea && currentClickArea.y === rightClickArea.y && !rightClickArea.occupiedBy)) {
+    return true;
+  }
+  if (topClickArea && higherTopClickArea) {
     return true;
   }
   return false;

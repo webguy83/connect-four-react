@@ -76,7 +76,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
     }
   }
 
-  function onRectClick(selectedClickAreaData: ClickAreaData) {
+  function onAreaClicked(selectedClickAreaData: ClickAreaData) {
     if (disableUI || selectedClickAreaData.fullColumn || (currentPlayer === 'opponent' && opponentName === 'CPU') || gameEnded) {
       return;
     }
@@ -123,15 +123,14 @@ export default function GameGrid(props: ConnectFourGridProps) {
     (selectedClickAreaData: ClickAreaData | null) => {
       lowestClickAreaRef.current = null;
       const isTied = isTieGame(allClickAreasData, COLUMNS, ROWS);
-      if (isTied) {
-        setTieGame(true);
-        return;
-      }
       if (selectedClickAreaData && selectedClickAreaData.occupiedBy) {
         const matches = processForWinnersOrSwap(selectedClickAreaData, allClickAreasData, COLUMNS, WINNING_LENGTH);
         if (matches.length >= WINNING_LENGTH) {
           setWinner(selectedClickAreaData.occupiedBy);
           setAllClickAreasData(matches);
+        } else if (isTied) {
+          setTieGame(true);
+          return;
         } else {
           swapToNextPlayer(selectedClickAreaData.occupiedBy);
         }
@@ -184,11 +183,11 @@ export default function GameGrid(props: ConnectFourGridProps) {
 
   const startCPUlogic = useCallback(
     (allClickAreasData: ClickAreaData[]) => {
-      const rectAreas = getInitialCPUtargets(allClickAreasData, COLUMNS);
-      const rankings: RankingInfo[] = rectAreas.map((rectArea) => {
-        const ranking = processCPUchoiceRankings(rectArea, allClickAreasData, COLUMNS, WINNING_LENGTH);
+      const clickAreas = getInitialCPUtargets(allClickAreasData, COLUMNS);
+      const rankings: RankingInfo[] = clickAreas.map((clickArea) => {
+        const ranking = processCPUchoiceRankings(clickArea, allClickAreasData, COLUMNS, WINNING_LENGTH);
         return {
-          index: rectArea.index,
+          index: clickArea.index,
           ranking,
         };
       });
@@ -243,12 +242,12 @@ export default function GameGrid(props: ConnectFourGridProps) {
 
       <svg className='white-grid' width='100%' height='100%' viewBox='0 0 632 584' xmlns='http://www.w3.org/2000/svg'>
         <defs>
-          <rect id='rect' width='100%' height='100%' fill='none' rx='40' ry='40' stroke='black' />
+          <rect id='clickArea' width='100%' height='100%' fill='none' rx='40' ry='40' stroke='black' />
           <clipPath id='clip'>
-            <use xlinkHref='#rect' />
+            <use xlinkHref='#clickArea' />
           </clipPath>
         </defs>
-        <use xlinkHref='#rect' />
+        <use xlinkHref='#clickArea' />
         <g clipPath='url(#clip)'>
           {playerChips}
 
@@ -265,14 +264,11 @@ export default function GameGrid(props: ConnectFourGridProps) {
                 <Box
                   component='rect'
                   sx={{
-                    // pointerEvents: data.fullColumn || disableUI || winner ? 'none' : 'auto',
                     '@media (hover: hover) and (pointer: fine)': {
                       cursor: data.fullColumn || disableUI || winner ? 'default' : 'pointer',
                     },
-                    //cursor: data.fullColumn || disableUI || winner ? 'default' : 'pointer',
-                    // cursor: data.fullColumn || disableUI || winner ? 'default' : 'pointer',
                   }}
-                  onClick={() => onRectClick(data)}
+                  onClick={() => onAreaClicked(data)}
                   onMouseOver={() => onMouseOverPiece(data)}
                   onMouseLeave={() => onMouseLeavePiece(data)}
                   width='88px'
