@@ -28,6 +28,8 @@ interface ConnectFourGridProps {
   setMainPlayerScore: Dispatch<SetStateAction<number>>;
   setTieGame: Dispatch<SetStateAction<boolean>>;
   setGameEnded: Dispatch<SetStateAction<boolean>>;
+  setGameRestarting: Dispatch<SetStateAction<boolean>>;
+  gameRestarting: boolean;
   opponentName: OpponentName;
   gameEnded: boolean;
   menuOpened: boolean;
@@ -55,6 +57,8 @@ export default function GameGrid(props: ConnectFourGridProps) {
     setGameEnded,
     gameEnded,
     menuOpened,
+    setGameRestarting,
+    gameRestarting,
   } = props;
   const containerRef = useRef(null);
   const initClickAreaRef = useRef<ClickAreaData | null>(null);
@@ -77,6 +81,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
   }
 
   function onAreaClicked(selectedClickAreaData: ClickAreaData) {
+    setGameRestarting(false);
     if (disableUI || selectedClickAreaData.fullColumn || (currentPlayer === 'opponent' && opponentName === 'CPU') || gameEnded) {
       return;
     }
@@ -87,13 +92,17 @@ export default function GameGrid(props: ConnectFourGridProps) {
 
   const swapToNextPlayer = useCallback(
     (player: Player) => {
-      if (player === 'main') {
-        setCurrentPlayer('opponent');
+      if (!gameRestarting) {
+        if (player === 'main') {
+          setCurrentPlayer('opponent');
+        } else {
+          setCurrentPlayer('main');
+        }
       } else {
-        setCurrentPlayer('main');
+        setPlayerChips([]);
       }
     },
-    [setCurrentPlayer]
+    [gameRestarting, setCurrentPlayer, setPlayerChips]
   );
 
   useEffect(() => {
@@ -144,6 +153,7 @@ export default function GameGrid(props: ConnectFourGridProps) {
       const currentClickArea: ClickAreaData = { ...lowestClickAreaRef.current };
       const x = currentClickArea.x + 44;
       const y = currentClickArea.y + 44;
+
       setPlayerChips((oldValues) => {
         return [
           ...oldValues,

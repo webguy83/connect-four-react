@@ -39,8 +39,10 @@ export default function GameBoard(props: GameBoardProps) {
   const [mainPlayerScore, setMainPlayerScore] = useState<number>(0);
   const { setOpponentScore, winner, setWinner, opponentScore } = useWinner(currentPlayer, timerSeconds);
   const [gameEnded, setGameEnded] = useState(false);
+  const [gameRestarting, setGameRestarting] = useState(false);
 
   function onRestartGameClick() {
+    setGameRestarting(true);
     resetOthers();
     setMainPlayerScore(0);
     setOpponentScore(0);
@@ -66,9 +68,9 @@ export default function GameBoard(props: GameBoardProps) {
     clearTimer();
     setOpenPauseMenu(false);
     setWinner(null);
-    setGameEnded(false);
     setDisableUI(false);
     setTieGame(false);
+    setGameEnded(false);
   }
 
   function closeMenu() {
@@ -123,6 +125,8 @@ export default function GameBoard(props: GameBoardProps) {
                   setGameEnded={setGameEnded}
                   gameEnded={gameEnded}
                   menuOpened={openPauseMenu}
+                  setGameRestarting={setGameRestarting}
+                  gameRestarting={gameRestarting}
                 />
                 <ConnectFourGridBlack />
               </div>
