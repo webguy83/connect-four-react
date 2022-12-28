@@ -1,4 +1,5 @@
 import { RankingInfo, ClickAreaData } from '../../../utils/Interfaces';
+import { Player } from '../../../utils/Types';
 
 export function getInitialCPUtargets(clickAreas: ClickAreaData[], columns: number) {
   const output: ClickAreaData[] = [];
@@ -194,8 +195,10 @@ export function processCPUchoiceRankings(currentClickArea: ClickAreaData, clickA
     defaultRanking = 5;
   } else if (checkForEasyPlayerWins(currentPlayerClickArea, clickAreasData, winningLength)) {
     defaultRanking = 4;
-  } else if (checkNextMoves(currentCpuClickArea, clickAreasData, cols, winningLength)) {
+  } else if (checkNextMoves('main', currentCpuClickArea, clickAreasData, cols, winningLength)) {
     defaultRanking = 0;
+  } else if (checkNextMoves('opponent', currentCpuClickArea, clickAreasData, cols, winningLength)) {
+    defaultRanking = 1;
   } else if ((matchesCPULength || matchesPlayerLength) >= 3 && checkIsAdjacentColEmpty(currentCpuClickArea, clickAreasData, cols)) {
     defaultRanking = 3;
   } else if (matchesCPULength >= 2) {
@@ -204,34 +207,21 @@ export function processCPUchoiceRankings(currentClickArea: ClickAreaData, clickA
   return defaultRanking;
 }
 
-function checkNextMoves(currentCpuClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number, winningLength: number) {
+function checkNextMoves(player: Player, currentCpuClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number, winningLength: number) {
   const modifiedClickAreasData = [...clickAreasData];
   const nextMoveClickArea = { ...modifiedClickAreasData[currentCpuClickArea.index - cols] };
   if (nextMoveClickArea) {
-    nextMoveClickArea.occupiedBy = 'opponent';
-    const horizonalOpponentMoves = horizonalMatches(nextMoveClickArea, clickAreasData);
-    if (horizonalOpponentMoves.length >= winningLength) {
+    nextMoveClickArea.occupiedBy = player;
+    const horizonalMoves = horizonalMatches(nextMoveClickArea, clickAreasData);
+    if (horizonalMoves.length >= winningLength) {
       return true;
     }
-    const diagonalLeftOpponentMoves = diagonalLeftMatches(nextMoveClickArea, clickAreasData, cols);
-    if (diagonalLeftOpponentMoves.length >= winningLength) {
+    const diagonalLeftMoves = diagonalLeftMatches(nextMoveClickArea, clickAreasData, cols);
+    if (diagonalLeftMoves.length >= winningLength) {
       return true;
     }
-    const diagonalRightOpponentMoves = diagonalRightMatches(nextMoveClickArea, clickAreasData, cols);
-    if (diagonalRightOpponentMoves.length >= winningLength) {
-      return true;
-    }
-    nextMoveClickArea.occupiedBy = 'main';
-    const horizonalMainMoves = horizonalMatches(nextMoveClickArea, clickAreasData);
-    if (horizonalMainMoves.length >= winningLength) {
-      return true;
-    }
-    const diagonalLeftMainMoves = diagonalLeftMatches(nextMoveClickArea, clickAreasData, cols);
-    if (diagonalLeftMainMoves.length >= winningLength) {
-      return true;
-    }
-    const diagonalRightMainMoves = diagonalRightMatches(nextMoveClickArea, clickAreasData, cols);
-    if (diagonalRightMainMoves.length >= winningLength) {
+    const diagonalRightMoves = diagonalRightMatches(nextMoveClickArea, clickAreasData, cols);
+    if (diagonalRightMoves.length >= winningLength) {
       return true;
     }
   }
@@ -275,7 +265,7 @@ export function getRankedIndexforCPU(rankings: RankingInfo[]) {
 
 export function rankToCenter(rankings: RankingInfo[], cols: number) {
   if (rankings.length === cols) {
-    const filteredRanks = rankings.filter((r) => r.ranking < 3);
+    const filteredRanks = rankings.filter((r) => r.ranking < 4);
     if (filteredRanks.length === cols) {
       return true;
     }
