@@ -34,7 +34,7 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: [Solution](https://your-solution-url.com)
+- Solution URL: [Solution](https://www.frontendmentor.io/solutions/connect-four-game-UECdb5C6Pe)
 - Live Site URL: [Connect Four](https://webguy83.github.io/connect-four-react/)
 
 ## My process
