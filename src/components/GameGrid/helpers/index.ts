@@ -3,7 +3,7 @@ import { RankingInfo, ClickAreaData } from '../../../utils/Interfaces';
 export function getInitialCPUtargets(clickAreas: ClickAreaData[], columns: number) {
   const output: ClickAreaData[] = [];
   for (let col = 0; col < columns; col++) {
-    let currentSelectedClickArea = { ...clickAreas[col] };
+    let currentSelectedClickArea: ClickAreaData = { ...clickAreas[col] };
     if (!currentSelectedClickArea.fullColumn) {
       let counter = col;
       while (currentSelectedClickArea && clickAreas[counter + columns]) {
@@ -42,7 +42,7 @@ export function isTieGame(clickAreas: ClickAreaData[], cols: number, rows: numbe
 export function verticalMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number) {
   const selectedClickAreas: ClickAreaData[] = [];
   if (focusedClickArea.occupiedBy) {
-    let currentSelectedClickArea = { ...focusedClickArea };
+    let currentSelectedClickArea: ClickAreaData = { ...focusedClickArea };
     while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy) {
       selectedClickAreas.push(currentSelectedClickArea);
       currentSelectedClickArea = clickAreasData[currentSelectedClickArea.index + cols];
@@ -51,10 +51,10 @@ export function verticalMatches(focusedClickArea: ClickAreaData, clickAreasData:
   return selectedClickAreas;
 }
 
-export function horizonalMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[]) {
+export function horizonalMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[], checkedForAdditionMatch = false) {
   const selectedClickAreas: ClickAreaData[] = [];
   if (focusedClickArea.occupiedBy) {
-    let currentSelectedClickArea = { ...focusedClickArea };
+    let currentSelectedClickArea: ClickAreaData = { ...focusedClickArea };
     while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy && focusedClickArea.y === currentSelectedClickArea.y) {
       selectedClickAreas.push(currentSelectedClickArea);
       currentSelectedClickArea = clickAreasData[currentSelectedClickArea.index - 1];
@@ -66,6 +66,24 @@ export function horizonalMatches(focusedClickArea: ClickAreaData, clickAreasData
       currentSelectedClickArea = clickAreasData[currentSelectedClickArea.index + 1];
     }
   }
+
+  if (checkedForAdditionMatch && selectedClickAreas.length === 3) {
+    const firstArea = selectedClickAreas[0];
+    const lastArea = selectedClickAreas[selectedClickAreas.length - 1];
+    if (Math.abs(firstArea.index - lastArea.index) === 2) {
+      let index = 0;
+      if (firstArea.index > lastArea.index) {
+        index = lastArea.index - 1;
+      } else {
+        index = lastArea.index + 1;
+      }
+      const newArea = clickAreasData.find((area) => area.index === index);
+      if (newArea && !newArea.occupiedBy && newArea.y === firstArea.y) {
+        selectedClickAreas.push(newArea);
+      }
+    }
+  }
+
   return selectedClickAreas;
 }
 
@@ -80,7 +98,7 @@ function checkDiagonalBoundariesAndGetClickArea(clickArea1: ClickAreaData, click
 export function diagonalLeftMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number) {
   const selectedClickAreas: ClickAreaData[] = [];
   if (focusedClickArea.occupiedBy) {
-    let currentSelectedClickArea = { ...focusedClickArea };
+    let currentSelectedClickArea: ClickAreaData = { ...focusedClickArea };
     while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy) {
       selectedClickAreas.push(currentSelectedClickArea);
       const clickArea1 = clickAreasData[currentSelectedClickArea.index - cols];
@@ -104,7 +122,7 @@ export function diagonalLeftMatches(focusedClickArea: ClickAreaData, clickAreasD
 export function diagonalRightMatches(focusedClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number) {
   const selectedClickAreas: ClickAreaData[] = [];
   if (focusedClickArea.occupiedBy) {
-    let currentSelectedClickArea = { ...focusedClickArea };
+    let currentSelectedClickArea: ClickAreaData = { ...focusedClickArea };
     while (currentSelectedClickArea && focusedClickArea.occupiedBy === currentSelectedClickArea.occupiedBy) {
       selectedClickAreas.push(currentSelectedClickArea);
       const clickArea1 = clickAreasData[currentSelectedClickArea.index + cols];
@@ -174,6 +192,8 @@ export function processCPUchoiceRankings(currentClickArea: ClickAreaData, clickA
     defaultRanking = 5;
   } else if (matchesPlayerLength >= winningLength) {
     defaultRanking = 4;
+  } else if (checkForEasyPlayerWins(currentPlayerClickArea, clickAreasData, winningLength)) {
+    defaultRanking = 3;
   } else if ((matchesCPULength || matchesPlayerLength) >= 3 && checkIsAdjacentColEmpty(currentCpuClickArea, clickAreasData)) {
     defaultRanking = 2;
   } else if (matchesCPULength >= 2) {
@@ -189,6 +209,10 @@ function checkIsAdjacentColEmpty(currentClickArea: ClickAreaData, clickAreasData
     return true;
   }
   return false;
+}
+
+function checkForEasyPlayerWins(playerClickArea: ClickAreaData, clickAreasData: ClickAreaData[], winningLength: number) {
+  return horizonalMatches(playerClickArea, clickAreasData, true).length >= winningLength;
 }
 
 export function getHighestRankings(rankings: RankingInfo[]) {
