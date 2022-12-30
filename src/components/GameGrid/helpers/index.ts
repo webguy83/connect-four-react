@@ -144,21 +144,46 @@ export function diagonalRightMatches(focusedClickArea: ClickAreaData, clickAreas
   return selectedClickAreas;
 }
 
+function removeDuplicates(duplicates: ClickAreaData[]) {
+  const set = new Set<number>();
+  const output: ClickAreaData[] = [];
+
+  duplicates.forEach((clickArea) => {
+    if (!set.has(clickArea.index)) {
+      set.add(clickArea.index);
+      output.push(clickArea);
+    }
+  });
+  return output;
+}
+
 export function processForWinnersOrSwap(currentClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number, winningLength: number) {
-  let matches: ClickAreaData[] = [];
-  if (verticalMatches(currentClickArea, clickAreasData, cols).length >= winningLength) {
-    matches = verticalMatches(currentClickArea, clickAreasData, cols);
-  } else if (horizonalMatches(currentClickArea, clickAreasData).length >= winningLength) {
-    matches = horizonalMatches(currentClickArea, clickAreasData);
-  } else if (diagonalLeftMatches(currentClickArea, clickAreasData, cols).length >= winningLength) {
-    matches = diagonalLeftMatches(currentClickArea, clickAreasData, cols);
-  } else if (diagonalRightMatches(currentClickArea, clickAreasData, cols).length >= winningLength) {
-    matches = diagonalRightMatches(currentClickArea, clickAreasData, cols);
+  const matches: ClickAreaData[] = [];
+  const vertMatches = verticalMatches(currentClickArea, clickAreasData, cols);
+  const horizMatches = horizonalMatches(currentClickArea, clickAreasData);
+  const diagLeftMatches = diagonalLeftMatches(currentClickArea, clickAreasData, cols);
+  const diagRightMatches = diagonalRightMatches(currentClickArea, clickAreasData, cols);
+
+  if (vertMatches.length >= winningLength) {
+    matches.push(...vertMatches);
+  }
+  if (horizMatches.length >= winningLength) {
+    matches.push(...horizMatches);
   }
 
-  if (matches.length >= winningLength) {
+  if (diagLeftMatches.length >= winningLength) {
+    matches.push(...diagLeftMatches);
+  }
+
+  if (diagRightMatches.length >= winningLength) {
+    matches.push(...diagRightMatches);
+  }
+
+  const finalMatches = removeDuplicates(matches);
+
+  if (finalMatches.length >= winningLength) {
     const updatedClicks = clickAreasData.map((clickArea, i) => {
-      const winnerClick: ClickAreaData | undefined = matches.find((winningClick) => winningClick.index === i);
+      const winnerClick: ClickAreaData | undefined = finalMatches.find((winningClick) => winningClick.index === i);
       if (winnerClick) {
         winnerClick.winningArea = true;
         return winnerClick;
@@ -168,7 +193,7 @@ export function processForWinnersOrSwap(currentClickArea: ClickAreaData, clickAr
     return updatedClicks;
   }
 
-  return matches;
+  return finalMatches;
 }
 
 export function processCPUchoiceRankings(currentClickArea: ClickAreaData, clickAreasData: ClickAreaData[], cols: number, winningLength: number) {
