@@ -53,7 +53,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
 
     '& .scoreBox': {
       width: '48%',
-      p: '1rem 3rem',
+      p: '1rem 2rem',
       [theme.breakpoints.up('sm')]: {
         p: '2rem 3rem',
       },
