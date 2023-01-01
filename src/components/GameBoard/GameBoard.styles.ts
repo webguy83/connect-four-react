@@ -67,7 +67,7 @@ export const gameBoardContainerStyles: SxProps<Theme> = (theme) => ({
     maxWidth: '63rem',
     mt: '1rem',
     [theme.breakpoints.up('mdlg')]: {
-      mt: '5rem',
+      mt: '4rem',
     },
     '.connectFour': {
       position: 'relative',
