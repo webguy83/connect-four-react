@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/connect-four-react/static/css/main.029e7f2d.css",
-    "main.js": "/connect-four-react/static/js/main.69752225.js",
+    "main.js": "/connect-four-react/static/js/main.06da8047.js",
     "index.html": "/connect-four-react/index.html",
     "main.029e7f2d.css.map": "/connect-four-react/static/css/main.029e7f2d.css.map",
-    "main.69752225.js.map": "/connect-four-react/static/js/main.69752225.js.map"
+    "main.06da8047.js.map": "/connect-four-react/static/js/main.06da8047.js.map"
   },
   "entrypoints": [
     "static/css/main.029e7f2d.css",
-    "static/js/main.69752225.js"
+    "static/js/main.06da8047.js"
   ]
 }
